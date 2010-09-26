@@ -17,7 +17,6 @@
 
 static int YAMLSerializationReadHandler(void *data, unsigned char *buffer, size_t size, size_t *size_read) {
   NSInteger outcome = [(NSInputStream *)data read: (uint8_t *)buffer maxLength: size];
-  NSLog(@"outcome: %i", outcome);
   if (outcome < 0) {
     *size_read = 0;
     return NO;
@@ -170,6 +169,7 @@ finalize:
   while (!done) {
 
     if (!yaml_parser_load(&parser, &document)) {
+      if (error)
       *error = [NSError errorWithDomain: YAMLErrorDomain
                                    code: kYAMLErrorCodeParseError
                                userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
@@ -218,10 +218,14 @@ finalize:
                           options: (YAMLReadOptions) opt
                             error: (NSError **) error;
 {
-  NSInputStream *inputStream = [[NSInputStream alloc] initWithData: data];
-  NSMutableArray *documents = [self YAMLWithStream: inputStream options: opt error: error];
-  [inputStream release];
-  return documents;
+  if (data) {
+    NSInputStream *inputStream = [[NSInputStream alloc] initWithData: data];
+    NSMutableArray *documents = [self YAMLWithStream: inputStream options: opt error: error];
+    [inputStream release];
+    return documents;
+  } else {
+    return nil;
+  }
 }
 
 @end
