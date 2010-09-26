@@ -1,0 +1,19 @@
+# Strip
+  # Comments:
+strip: |-
+  # textâ†“
+··â‡“
+·# Clip
+··# comments:
+â†“
+clip: |
+  # textâ†“
+·â†“
+·# Keep
+··# comments:
+â†“
+keep: |+
+  # textâ†“
+â†“
+·# Trail
+··# comments.

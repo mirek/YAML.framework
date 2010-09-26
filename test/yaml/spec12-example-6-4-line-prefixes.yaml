@@ -1,0 +1,7 @@
+plain: text
+··lines
+quoted: "text
+··â†’lines"
+block: |
+··text
+···â†’lines
