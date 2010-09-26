@@ -1,14 +1,14 @@
-# http://yaml.kwiki.org/index.cgi?YamlTestingSuiteFetcher
-# fetch_yts.rb (assumes Ruby >= 1.7.3)
-
+# Dump example files from http://www.yaml.org/spec/1.2/spec.html
+require 'rubygems'
 require 'open-uri'
-require 'cgi'
+require 'hpricot'
 
-open('http://yaml.kwiki.org/index.cgi?YamlTestingSuiteIndex').read.scan(/"\/yamlwiki\/(Yts.*?)"/) do |yts|
-  puts "Fetching #{yts[0]}"
-  data = Net::HTTP::get
-  URI::parse("#{wiki}/#{yts[0]}")
-  File::open(yts[0], 'w') { |file|
-    file.puts CGI::unescapeHTML( $1 )
-  } if data =~ /<pre.*?>(.*?)\n<\/pre>/mi
+doc = open("http://www.yaml.org/spec/1.2/spec.html") { |f| Hpricot(f) }
+
+doc.search("//div[@class='example']").each do |example|
+  title = example.at("//p[@class='title']/b").to_plain_text
+  yaml = example.at("//*[@class='database']").to_plain_text
+  filename = "spec12-#{title.downcase.gsub(/[^a-zA-Z0-9]/, '-').gsub(/-+/, '-').gsub(/-+$/, '')}.yaml"
+  puts filename
+  open("yaml/#{filename}", 'w').write(yaml)
 end
