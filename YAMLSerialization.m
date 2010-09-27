@@ -7,6 +7,16 @@
 
 #import "YAMLSerialization.h"
 
+// Assumes NSError **error is in the current scope
+#define YAML_SET_ERROR(errorCode, description, recovery) \
+  if (error) \
+    *error = [NSError errorWithDomain: YAMLErrorDomain \
+                                 code: errorCode \
+                             userInfo: [NSDictionary dictionaryWithObjectsAndKeys: \
+                                        description, NSLocalizedDescriptionKey, \
+                                        recovery, NSLocalizedRecoverySuggestionErrorKey, \
+                                        nil]]
+
 
 #pragma mark Write support
 #pragma mark -
@@ -45,12 +55,12 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
     // Supported
   } else {
     if (error)
-    *error = [NSError errorWithDomain: YAMLErrorDomain
-                                 code: kYAMLErrorInvalidOptions
-                             userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-                                        @"Currently kYAMLReadOptionStringScalars is supported", NSLocalizedDescriptionKey,
-                                        @"Serialize with kYAMLReadOptionStringScalars option", NSLocalizedRecoverySuggestionErrorKey,
-                                        nil]];
+      *error = [NSError errorWithDomain: YAMLErrorDomain
+                                   code: kYAMLErrorInvalidOptions
+                               userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
+                                          @"Currently kYAMLReadOptionStringScalars is supported", NSLocalizedDescriptionKey,
+                                          @"Serialize with kYAMLReadOptionStringScalars option", NSLocalizedRecoverySuggestionErrorKey,
+                                          nil]];
     goto error;
   }
 
@@ -65,12 +75,14 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
   
   id *objects = (id *)malloc(sizeof(id) * (document->nodes.top - document->nodes.start));
   if (!objects) {
-    *error = [NSError errorWithDomain: YAMLErrorDomain
-                                 code: kYAMLErrorCodeOutOfMemory
-                             userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-                                        @"Couldn't allocate memory", NSLocalizedDescriptionKey,
-                                        @"Please try to free memory and retry", NSLocalizedRecoverySuggestionErrorKey,
-                                        nil]];
+    //YAML_SET_ERROR(kYAMLErrorCodeOutOfMemory, @"Error in yaml_parser_initialize(&parser)", @"Internal error, please let us know about this error");
+    if (error)
+      *error = [NSError errorWithDomain: YAMLErrorDomain
+                                   code: kYAMLErrorCodeOutOfMemory
+                               userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
+                                          @"Couldn't allocate memory", NSLocalizedDescriptionKey,
+                                          @"Please try to free memory and retry", NSLocalizedRecoverySuggestionErrorKey,
+                                          nil]];
     goto error;
   }
   
@@ -155,12 +167,7 @@ finalize:
   [stream open];
   
   if (!yaml_parser_initialize(&parser)) {
-    *error = [NSError errorWithDomain: YAMLErrorDomain
-                                 code: kYAMLErrorCodeParserInitializationFailed
-                             userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-                                        @"Error in yaml_parser_initialize(&parser)", NSLocalizedDescriptionKey,
-                                        @"Internal error, please let us know about this error", NSLocalizedRecoverySuggestionErrorKey,
-                                        nil]];
+    YAML_SET_ERROR(kYAMLErrorCodeParserInitializationFailed, @"Error in yaml_parser_initialize(&parser)", @"Internal error, please let us know about this error");
     goto error;
   }
   
@@ -169,13 +176,7 @@ finalize:
   while (!done) {
 
     if (!yaml_parser_load(&parser, &document)) {
-      if (error)
-      *error = [NSError errorWithDomain: YAMLErrorDomain
-                                   code: kYAMLErrorCodeParseError
-                               userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-                                          @"Parse error", NSLocalizedDescriptionKey,
-                                          @"Make sure YAML file is well formed", NSLocalizedRecoverySuggestionErrorKey,
-                                          nil]];
+      YAML_SET_ERROR(kYAMLErrorCodeParseError, @"Parse error", @"Make sure YAML file is well formed");
       goto error;
     }
   
