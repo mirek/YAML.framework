@@ -8,9 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
-		EB2B592E124E2117001FFEEB /* events.m in Sources */ = {isa = PBXBuildFile; fileRef = EB2B592D124E2117001FFEEB /* events.m */; };
-		EB2B5932124E214A001FFEEB /* YAML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* YAML.framework */; };
+		EB2B592E124E2117001FFEEB /* events.c in Sources */ = {isa = PBXBuildFile; fileRef = EB2B592D124E2117001FFEEB /* events.c */; };
 		EB2B5952124E230A001FFEEB /* yaml in Copy YAML Files */ = {isa = PBXBuildFile; fileRef = EB6C424F124D9B3E00886AD1 /* yaml */; };
+		EB68E826125101C200336500 /* api.c in Sources */ = {isa = PBXBuildFile; fileRef = EB6C3EC1124D86C400886AD1 /* api.c */; };
+		EB68E827125101C200336500 /* dumper.c in Sources */ = {isa = PBXBuildFile; fileRef = EB6C3EC2124D86C400886AD1 /* dumper.c */; };
+		EB68E828125101C200336500 /* emitter.c in Sources */ = {isa = PBXBuildFile; fileRef = EB6C3EC3124D86C400886AD1 /* emitter.c */; };
+		EB68E829125101C200336500 /* loader.c in Sources */ = {isa = PBXBuildFile; fileRef = EB6C3EC4124D86C400886AD1 /* loader.c */; };
+		EB68E82A125101C200336500 /* parser.c in Sources */ = {isa = PBXBuildFile; fileRef = EB6C3EC7124D86C400886AD1 /* parser.c */; };
+		EB68E82B125101C200336500 /* reader.c in Sources */ = {isa = PBXBuildFile; fileRef = EB6C3EC8124D86C400886AD1 /* reader.c */; };
+		EB68E82C125101C200336500 /* scanner.c in Sources */ = {isa = PBXBuildFile; fileRef = EB6C3EC9124D86C400886AD1 /* scanner.c */; };
+		EB68E82D125101C200336500 /* writer.c in Sources */ = {isa = PBXBuildFile; fileRef = EB6C3ECA124D86C400886AD1 /* writer.c */; };
 		EB6C3FBA124D872600886AD1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6C3FB9124D872600886AD1 /* Foundation.framework */; };
 		EB6C419F124D8B4F00886AD1 /* api.c in Sources */ = {isa = PBXBuildFile; fileRef = EB6C3EC1124D86C400886AD1 /* api.c */; };
 		EB6C41A0124D8B4F00886AD1 /* dumper.c in Sources */ = {isa = PBXBuildFile; fileRef = EB6C3EC2124D86C400886AD1 /* dumper.c */; };
@@ -25,19 +32,23 @@
 		EB6C422C124D9A4B00886AD1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6C3FB9124D872600886AD1 /* Foundation.framework */; };
 		EB6C4252124D9B4A00886AD1 /* yaml in Copy YAML Files */ = {isa = PBXBuildFile; fileRef = EB6C424F124D9B3E00886AD1 /* yaml */; };
 		EB6C433C124E0CF600886AD1 /* test.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6C4226124D9A1700886AD1 /* test.m */; };
+		EBE745BA124F8C0D00618049 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6C3FB9124D872600886AD1 /* Foundation.framework */; };
+		EBE745BB124F8C0D00618049 /* YAML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* YAML.framework */; };
+		EBE745BD124F8C0D00618049 /* yaml in Copy YAML Files */ = {isa = PBXBuildFile; fileRef = EB6C424F124D9B3E00886AD1 /* yaml */; };
+		EBE745C7124F8C2F00618049 /* spec12examples.m in Sources */ = {isa = PBXBuildFile; fileRef = EBE745AF124F8B5000618049 /* spec12examples.m */; };
 		EBF83D8B124D7A3E008517E5 /* YAMLSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = EBF83D89124D7A3E008517E5 /* YAMLSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EBF83D8C124D7A3E008517E5 /* YAMLSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF83D8A124D7A3E008517E5 /* YAMLSerialization.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		EB2B5930124E2148001FFEEB /* PBXContainerItemProxy */ = {
+		EB6C4212124D99CB00886AD1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
 			remoteInfo = YAML;
 		};
-		EB6C4212124D99CB00886AD1 /* PBXContainerItemProxy */ = {
+		EBE745B6124F8C0D00618049 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
@@ -69,6 +80,17 @@
 			name = "Copy YAML Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EBE745BC124F8C0D00618049 /* Copy YAML Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				EBE745BD124F8C0D00618049 /* yaml in Copy YAML Files */,
+			);
+			name = "Copy YAML Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -77,7 +99,7 @@
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* YAML.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YAML.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB2B5928124E2100001FFEEB /* events */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = events; sourceTree = BUILT_PRODUCTS_DIR; };
-		EB2B592D124E2117001FFEEB /* events.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = events.m; sourceTree = "<group>"; };
+		EB2B592D124E2117001FFEEB /* events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = events.c; sourceTree = "<group>"; };
 		EB6C3E59124D86C400886AD1 /* aclocal.m4 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = aclocal.m4; sourceTree = "<group>"; };
 		EB6C3E5B124D86C400886AD1 /* config.guess */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = config.guess; sourceTree = "<group>"; };
 		EB6C3E5C124D86C400886AD1 /* config.sub */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = config.sub; sourceTree = "<group>"; };
@@ -250,6 +272,8 @@
 		EB6C420E124D99BE00886AD1 /* test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB6C4226124D9A1700886AD1 /* test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = test.m; sourceTree = "<group>"; };
 		EB6C424F124D9B3E00886AD1 /* yaml */ = {isa = PBXFileReference; lastKnownFileType = folder; path = yaml; sourceTree = "<group>"; };
+		EBE745AF124F8B5000618049 /* spec12examples.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = spec12examples.m; sourceTree = "<group>"; };
+		EBE745C1124F8C0D00618049 /* test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBF83D89124D7A3E008517E5 /* YAMLSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YAMLSerialization.h; sourceTree = "<group>"; };
 		EBF83D8A124D7A3E008517E5 /* YAMLSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YAMLSerialization.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -267,7 +291,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB2B5932124E214A001FFEEB /* YAML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,6 +303,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EBE745B9124F8C0D00618049 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EBE745BA124F8C0D00618049 /* Foundation.framework in Frameworks */,
+				EBE745BB124F8C0D00618049 /* YAML.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -289,6 +321,7 @@
 				8DC2EF5B0486A6940098B216 /* YAML.framework */,
 				EB6C420E124D99BE00886AD1 /* test */,
 				EB2B5928124E2100001FFEEB /* events */,
+				EBE745C1124F8C0D00618049 /* test */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -599,9 +632,10 @@
 		EB6C4222124D9A0200886AD1 /* test */ = {
 			isa = PBXGroup;
 			children = (
+				EBE745AF124F8B5000618049 /* spec12examples.m */,
 				EB6C424F124D9B3E00886AD1 /* yaml */,
 				EB6C4226124D9A1700886AD1 /* test.m */,
-				EB2B592D124E2117001FFEEB /* events.m */,
+				EB2B592D124E2117001FFEEB /* events.c */,
 			);
 			path = test;
 			sourceTree = "<group>";
@@ -651,7 +685,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				EB2B5931124E2148001FFEEB /* PBXTargetDependency */,
 			);
 			name = events;
 			productName = events;
@@ -676,6 +709,24 @@
 			productReference = EB6C420E124D99BE00886AD1 /* test */;
 			productType = "com.apple.product-type.tool";
 		};
+		EBE745B4124F8C0D00618049 /* test (spec12examples) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EBE745BE124F8C0D00618049 /* Build configuration list for PBXNativeTarget "test (spec12examples)" */;
+			buildPhases = (
+				EBE745B7124F8C0D00618049 /* Sources */,
+				EBE745B9124F8C0D00618049 /* Frameworks */,
+				EBE745BC124F8C0D00618049 /* Copy YAML Files */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EBE745B5124F8C0D00618049 /* PBXTargetDependency */,
+			);
+			name = "test (spec12examples)";
+			productName = test;
+			productReference = EBE745C1124F8C0D00618049 /* test */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -698,6 +749,7 @@
 			targets = (
 				8DC2EF4F0486A6940098B216 /* YAML */,
 				EB6C420D124D99BE00886AD1 /* test */,
+				EBE745B4124F8C0D00618049 /* test (spec12examples) */,
 				EB2B5927124E2100001FFEEB /* events */,
 			);
 		};
@@ -735,7 +787,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB2B592E124E2117001FFEEB /* events.m in Sources */,
+				EB68E826125101C200336500 /* api.c in Sources */,
+				EB68E827125101C200336500 /* dumper.c in Sources */,
+				EB68E828125101C200336500 /* emitter.c in Sources */,
+				EB68E829125101C200336500 /* loader.c in Sources */,
+				EB68E82A125101C200336500 /* parser.c in Sources */,
+				EB68E82B125101C200336500 /* reader.c in Sources */,
+				EB68E82C125101C200336500 /* scanner.c in Sources */,
+				EB68E82D125101C200336500 /* writer.c in Sources */,
+				EB2B592E124E2117001FFEEB /* events.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -747,18 +807,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EBE745B7124F8C0D00618049 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EBE745C7124F8C2F00618049 /* spec12examples.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		EB2B5931124E2148001FFEEB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8DC2EF4F0486A6940098B216 /* YAML */;
-			targetProxy = EB2B5930124E2148001FFEEB /* PBXContainerItemProxy */;
-		};
 		EB6C4213124D99CB00886AD1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 8DC2EF4F0486A6940098B216 /* YAML */;
 			targetProxy = EB6C4212124D99CB00886AD1 /* PBXContainerItemProxy */;
+		};
+		EBE745B5124F8C0D00618049 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8DC2EF4F0486A6940098B216 /* YAML */;
+			targetProxy = EBE745B6124F8C0D00618049 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -855,14 +923,9 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				GCC_PREFIX_HEADER = "";
 				INSTALL_PATH = /usr/local/bin;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
+				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = events;
 			};
@@ -877,14 +940,9 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				GCC_PREFIX_HEADER = "";
 				INSTALL_PATH = /usr/local/bin;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
+				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = events;
 				ZERO_LINK = NO;
@@ -915,6 +973,52 @@
 			name = Debug;
 		};
 		EB6C4211124D99BE00886AD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = test;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		EBE745BF124F8C0D00618049 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = test;
+			};
+			name = Debug;
+		};
+		EBE745C0124F8C0D00618049 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -972,6 +1076,15 @@
 			buildConfigurations = (
 				EB6C4210124D99BE00886AD1 /* Debug */,
 				EB6C4211124D99BE00886AD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EBE745BE124F8C0D00618049 /* Build configuration list for PBXNativeTarget "test (spec12examples)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EBE745BF124F8C0D00618049 /* Debug */,
+				EBE745C0124F8C0D00618049 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
