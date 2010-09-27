@@ -2,4 +2,4 @@
 build
 YAML.xcodeproj/*.mode1v3
 YAML.xcodeproj/*.pbxuser
-test/bigboy.yaml
+test/yaml/bigboy.yaml
