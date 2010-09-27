@@ -10,14 +10,25 @@
 
 int main() {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
+  printf("reading file... ");
+  NSData *data = [NSData dataWithContentsOfFile: @"yaml/spec12-example-7-4.yaml"];
+  printf("done.\n");
+
+  NSTimeInterval before = [[NSDate date] timeIntervalSince1970];
+
+  NSMutableArray *yaml = [YAMLSerialization YAMLWithData: data options: kYAMLReadOptionStringScalars error: nil];
+
+  //NSInputStream *stream = [[NSInputStream alloc] initWithFileAtPath: @"yaml/bigboy.yaml"];
+//  NSMutableArray *yaml = [YAMLSerialization YAMLWithStream: stream options: kYAMLReadOptionStringScalars error: nil];
+
+  //printf("%i\n", (int)[yaml count]);
   
-//  NSData *data = [NSData dataWithContentsOfURL: [NSURL URLWithString: @"http://jameswhite.org/foo.yaml"]];
-//  id yaml = [YAMLSerialization YAMLWithData: data options: YAMLMutableContainers error: nil];
-
-  NSInputStream *stream = [[NSInputStream alloc] initWithFileAtPath: @"yaml/items.yaml"];
-  id yaml = [YAMLSerialization YAMLWithStream: stream options: kYAMLReadOptionStringScalars error: nil];
-
   printf("%s", [[yaml description] UTF8String]);
+  
+  NSTimeInterval after = [[NSDate date] timeIntervalSince1970];
+  
+  printf("taken %f\n", (after - before));
   
   [pool drain];
   
