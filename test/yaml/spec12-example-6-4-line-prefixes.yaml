@@ -1,7 +1,7 @@
 plain: text
-ｷｷlines
+  lines
 quoted: "text
-ｷｷ竊値ines"
+  竊値ines"
 block: |
-ｷｷtext
-ｷｷｷ竊値ines
+  text
+   竊値ines

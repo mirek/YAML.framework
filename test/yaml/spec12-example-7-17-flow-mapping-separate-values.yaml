@@ -1,6 +1,6 @@
 {
-unquoted·:·"separate",
+unquoted : "separate",
 http://foo.com,
 omitted value:°,
-°:·omitted key,
+°: omitted key,
 }

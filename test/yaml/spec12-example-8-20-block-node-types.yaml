@@ -1,6 +1,6 @@
--â†“
-··"flow in block"â†“
--·>
- Block scalarâ†“
--·!!map # Block collection
-  foo : barâ†“
+-
+  "flow in block"
+- >
+ Block scalar
+- !!map # Block collection
+  foo : bar

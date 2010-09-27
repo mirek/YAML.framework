@@ -1,6 +1,6 @@
-{·first:·Sammy,·last:·Sosa·}:â†“
+{ first: Sammy, last: Sosa }:
 # Statistics:
-··hr:··# Home runs
-·····65
-··avg:·# Average
-···0.278
+  hr:  # Home runs
+     65
+  avg: # Average
+   0.278

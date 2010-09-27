@@ -1,9 +1,9 @@
-- |# Empty header↓
+- |# Empty header
  literal
-- >1 # Indentation indicator↓
- �folded
-- |+ # Chomping indicator↓
+- >1 # Indentation indicator
+  folded
+- |+ # Chomping indicator
  keep
 
-- >1- # Both indicators↓
- �strip
+- >1- # Both indicators
+  strip

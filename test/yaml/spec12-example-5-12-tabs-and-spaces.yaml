@@ -1,6 +1,6 @@
 # Tabs and spaces
-quoted:·"Quoted â†’"
+quoted: "Quoted â†’"
 block:â†’|
-··void main() {
-··â†’printf("Hello, world!\n");
-··}
+  void main() {
+  â†’printf("Hello, world!\n");
+  }
