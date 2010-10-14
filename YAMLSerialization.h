@@ -29,7 +29,7 @@ typedef enum {
   kYAMLWriteOptionMultipleDocuments = 0x0000000000000010,
 } YAMLWriteOptions;
 
-NSString *const YAMLErrorDomain = @"com.github.mirek.yaml";
+extern NSString *const YAMLErrorDomain;
 
 @interface YAMLSerialization : NSObject {
 }

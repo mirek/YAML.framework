@@ -7,6 +7,8 @@
 
 #import "YAMLSerialization.h"
 
+NSString *const YAMLErrorDomain = @"com.github.mirek.yaml";
+
 // Assumes NSError **error is in the current scope
 #define YAML_SET_ERROR(errorCode, description, recovery) \
   if (error) \
