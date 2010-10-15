@@ -40,7 +40,10 @@ static int YAMLSerializationReadHandler(void *data, unsigned char *buffer, size_
 
 // Serialize single, parsed document. Does not destroy the document.
 static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptions opt, NSError **error) {
-  
+
+  id root = nil;
+  id *objects = nil;
+
   // Mutability options
   Class arrayClass = [NSArray class];
   Class dictionaryClass = [NSDictionary class];
@@ -70,12 +73,10 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
   yaml_node_t *node;
   yaml_node_item_t *item;
   yaml_node_pair_t *pair;
-  
-  id root = nil;
-  
+
   int i = 0;
-  
-  id *objects = (id *)malloc(sizeof(id) * (document->nodes.top - document->nodes.start));
+
+  objects = (id *)malloc(sizeof(id) * (document->nodes.top - document->nodes.start));
   if (!objects) {
     //YAML_SET_ERROR(kYAMLErrorCodeOutOfMemory, @"Error in yaml_parser_initialize(&parser)", @"Internal error, please let us know about this error");
     if (error)
@@ -136,11 +137,10 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
   goto finalize;
 
 error:
-  
-  if (root) {
-    [root release];
-    root = nil;
-  }
+
+  [root release];
+  root = nil;
+
 
 finalize:
   
