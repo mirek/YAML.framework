@@ -171,7 +171,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
                                           @"Currently kYAMLReadOptionStringScalars is supported", NSLocalizedDescriptionKey,
                                           @"Serialize with kYAMLReadOptionStringScalars option", NSLocalizedRecoverySuggestionErrorKey,
                                           nil]];
-    goto error;
+	  return nil;
   }
 
   
@@ -191,7 +191,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
                                           @"Couldn't allocate memory", NSLocalizedDescriptionKey,
                                           @"Please try to free memory and retry", NSLocalizedRecoverySuggestionErrorKey,
                                           nil]];
-    goto error;
+	  return nil;
   }
   
   // Create all objects, don't fill containers yet...
@@ -229,7 +229,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
         break;
     }
   }
-  
+	
   // Retain the root object
   if (root)
     [root retain];
@@ -239,16 +239,6 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
     if (objects[i])
       [objects[i] release];
 
-  goto finalize;
-
-error:
-
-  [root release];
-  root = nil;
-
-
-finalize:
-  
   if (objects)
     free(objects);
   
@@ -263,7 +253,7 @@ finalize:
                             options: (YAMLReadOptions) opt
                               error: (NSError **) error
 {
-  NSMutableArray *documents = [[NSMutableArray alloc] init];
+  NSMutableArray *documents = [NSMutableArray array];
   id documentObject = nil;
   
   yaml_parser_t parser;
@@ -274,8 +264,8 @@ finalize:
   [stream open];
   
   if (!yaml_parser_initialize(&parser)) {
-    YAML_SET_ERROR(kYAMLErrorCodeParserInitializationFailed, @"Error in yaml_parser_initialize(&parser)", @"Internal error, please let us know about this error");
-    goto error;
+	  YAML_SET_ERROR(kYAMLErrorCodeParserInitializationFailed, @"Error in yaml_parser_initialize(&parser)", @"Internal error, please let us know about this error");
+	  return nil;
   }
   
   yaml_parser_set_input(&parser, YAMLSerializationReadHandler, (void *)stream);
@@ -283,17 +273,16 @@ finalize:
   while (!done) {
 
     if (!yaml_parser_load(&parser, &document)) {
-      YAML_SET_ERROR(kYAMLErrorCodeParseError, @"Parse error", @"Make sure YAML file is well formed");
-      goto error;
+		YAML_SET_ERROR(kYAMLErrorCodeParseError, @"Parse error", @"Make sure YAML file is well formed");
+		return nil;
     }
   
     done = !yaml_document_get_root_node(&document);
     
     if (!done) {
       documentObject = YAMLSerializationWithDocument(&document, opt, error);
-      if (error) {
-        yaml_document_delete(&document);
-        goto error;
+      if (*error) {
+		  yaml_document_delete(&document);
       } else {
         [documents addObject: documentObject];
         [documentObject release];
@@ -304,22 +293,8 @@ finalize:
     yaml_document_delete(&document);
   }
   
-  goto finalize;
-  
-error:
-  
-  if (documentObject)
-    [documentObject release];
-  documentObject = nil;
-  
-  if (documents)
-    [documents release];
-  documents = nil;
-  
-finalize:
-  
-  yaml_parser_delete(&parser);
-  return documents;
+	yaml_parser_delete(&parser);
+	return documents;
 }
 
 + (NSMutableArray *) YAMLWithData: (NSData *) data
@@ -379,6 +354,7 @@ finalize:
 	}
 	
 	[stream close];
+	yaml_emitter_delete(&emitter);
 }
 
 + (NSData *) dataFromYAML:(id)yaml options:(YAMLWriteOptions) opt error:(NSError **) error
@@ -418,6 +394,7 @@ finalize:
 		yaml_emitter_dump(&emitter, document);
 	}
 
+	yaml_emitter_delete(&emitter);
 	return [data dataUsingEncoding:NSUnicodeStringEncoding];
 }
 
