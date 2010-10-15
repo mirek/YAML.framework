@@ -1,8 +1,10 @@
 //
 //  YAMLSerialization.h
 //  YAML Serialization support by Mirek Rusin based on C library LibYAML by Kirill Simonov
+//	Released under MIT License
 //
-//  Copyright 2010 Mirek Rusin, Released under MIT License
+//  Copyright 2010 Mirek Rusin
+//	Copyright 2010 Stanislav Yudin
 //
 
 #import <Foundation/Foundation.h>
@@ -20,8 +22,10 @@ typedef enum {
   kYAMLErrorNoErrors,
   kYAMLErrorCodeParserInitializationFailed,
   kYAMLErrorCodeParseError,
+  kYAMLErrorCodeEmitterError,
   kYAMLErrorInvalidOptions,
-  kYAMLErrorCodeOutOfMemory
+  kYAMLErrorCodeOutOfMemory,
+  kYAMLErrorInvalidYamlObject,
 } YAMLErrorCode;
 
 typedef enum {
@@ -34,14 +38,14 @@ NSString *const YAMLErrorDomain = @"com.github.mirek.yaml";
 @interface YAMLSerialization : NSObject {
 }
 
-//+ (NSInteger) writeYAML: (id) yaml
-//               toStream: (NSOutputStream *) stream
-//                options: (YAMLWriteOptions) opt
-//                  error: (NSError **) error;
++ (void) writeYAML: (id) yaml
+		  toStream: (NSOutputStream *) stream
+		   options: (YAMLWriteOptions) opt
+			 error: (NSError **) error;
 
-//+ (NSData *) dataFromYAML: (id) yaml
-//                  options: (YAMLWriteOptions) opt
-//                    error: (NSError **) error;
++ (NSData *) dataFromYAML: (id) yaml
+                  options: (YAMLWriteOptions) opt
+                    error: (NSError **) error;
 
 + (NSMutableArray *) YAMLWithStream: (NSInputStream *) stream 
                             options: (YAMLReadOptions) opt
