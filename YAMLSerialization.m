@@ -44,19 +44,19 @@ static int YAMLSerializationProcessValue(yaml_document_t *document, id value) {
 	
 	if ([value isKindOfClass:[NSDictionary class]] ) {
 		
-		nodeId = yaml_document_add_mapping(document, NULL, YAML_ANY_MAPPING_STYLE);
+		nodeId = yaml_document_add_mapping(document, NULL, YAML_BLOCK_MAPPING_STYLE);
 		for(NSString *key in [value allKeys]) {
 			int keyId = YAMLSerializationProcessValue(document, key);
-			id value = [value objectForKey:key];
-			int valueId = YAMLSerializationProcessValue(document, value);
+			id keyValue = [value objectForKey:key];
+			int valueId = YAMLSerializationProcessValue(document, keyValue);
 			yaml_document_append_mapping_pair(document, nodeId, keyId, valueId);
 		}
 	}
 	else if ([value isKindOfClass:[NSArray class]] ) {
 		
-		nodeId = yaml_document_add_sequence(document, NULL, YAML_ANY_SEQUENCE_STYLE);
-		for(id value in value) {
-			int childId = YAMLSerializationProcessValue(document, value);
+		nodeId = yaml_document_add_sequence(document, NULL, YAML_BLOCK_SEQUENCE_STYLE);
+		for(id childValue in value) {
+			int childId = YAMLSerializationProcessValue(document, childValue);
 			yaml_document_append_sequence_item(document, nodeId, childId);
 		}
 	}
