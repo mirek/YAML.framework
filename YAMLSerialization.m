@@ -27,7 +27,7 @@ NSString *const YAMLErrorDomain = @"com.github.mirek.yaml";
 
 static int YAMLSerializationDataHandler(void *data, unsigned char *buffer, size_t size) {
 	NSMutableString *string = (NSMutableString*)data;
-	[string appendString:[NSString stringWithCString:data encoding:NSUnicodeStringEncoding]];
+	[string appendFormat:@"%s", buffer];
 	return YES;
 }
 
@@ -61,7 +61,9 @@ static int YAMLSerializationProcessValue(yaml_document_t *document, id value) {
 		}
 	}
 	else {
-		
+		if ( ![value isKindOfClass:[NSString class]] ) {
+			value = [value stringValue];
+		}
 		nodeId = yaml_document_add_scalar(document, NULL, (yaml_char_t*)[value UTF8String], [value length], YAML_PLAIN_SCALAR_STYLE);
 	}
 	return nodeId;
@@ -321,6 +323,8 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
 		YAML_SET_ERROR(kYAMLErrorCodeEmitterError, @"Error in yaml_emitter_initialize(&emitter)", @"Internal error, please let us know about this error");
 		return;
 	}
+	
+	yaml_emitter_set_encoding(&emitter, YAML_UTF8_ENCODING);
 	yaml_emitter_set_output(&emitter, YAMLSerializationWriteHandler, (void *)stream);
 	
 	// Open output stream
@@ -366,6 +370,8 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
 		YAML_SET_ERROR(kYAMLErrorCodeEmitterError, @"Error in yaml_emitter_initialize(&emitter)", @"Internal error, please let us know about this error");
 		return nil;
 	}
+
+	yaml_emitter_set_encoding(&emitter, YAML_UTF8_ENCODING);
 	yaml_emitter_set_output(&emitter, YAMLSerializationDataHandler, (void *)data);
 	
 	if (kYAMLWriteOptionMultipleDocuments & opt) {
