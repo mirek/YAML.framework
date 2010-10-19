@@ -27,7 +27,9 @@ NSString *const YAMLErrorDomain = @"com.github.mirek.yaml";
 
 static int YAMLSerializationDataHandler(void *data, unsigned char *buffer, size_t size) {
 	NSMutableString *string = (NSMutableString*)data;
-	[string appendFormat:@"%s", buffer];
+	NSString *buf = [[NSString alloc] initWithBytes:buffer length:size encoding:NSUTF8StringEncoding]; 
+	[string appendString:buf];
+	[buf release];
 	return YES;
 }
 
