@@ -238,10 +238,10 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
   if (root)
     [root retain];
   
-  // Release all objects, only root (and all referenced) objects should have retain count > 0
+  // Release all objects. The root object and all referenced (in containers) objects
+  // will have retain count > 0
   for (node = document->nodes.start, i = 0; node < document->nodes.top; node++, i++)
-    if (objects[i])
-      [objects[i] release];
+    [objects[i] release];
 
   if (objects)
     free(objects);
