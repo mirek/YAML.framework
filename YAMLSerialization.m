@@ -76,24 +76,12 @@ static yaml_document_t* YAMLSerializationToDocument(id yaml, YAMLWriteOptions op
 	
 	yaml_document_t *document = (yaml_document_t*)malloc( sizeof(yaml_document_t));
 	if (!document) {
-		//YAML_SET_ERROR(kYAMLErrorCodeOutOfMemory, @"Error in yaml_parser_initialize(&parser)", @"Internal error, please let us know about this error");
-		if (error)
-			*error = [NSError errorWithDomain: YAMLErrorDomain
-										 code: kYAMLErrorCodeOutOfMemory
-									 userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-												@"Couldn't allocate memory", NSLocalizedDescriptionKey,
-												@"Please try to free memory and retry", NSLocalizedRecoverySuggestionErrorKey,
-												nil]];
+		YAML_SET_ERROR(kYAMLErrorCodeOutOfMemory, @"Couldn't allocate memory", @"Please try to free memory and retry");
 		return NULL;
 	}
 	
 	if (!yaml_document_initialize(document, NULL, NULL, NULL, 0, 0)) {
-		*error = [NSError errorWithDomain: YAMLErrorDomain
-									 code: kYAMLErrorInvalidYamlObject
-								 userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-											@"Failed to initialize yaml document", NSLocalizedDescriptionKey,
-											@"Underlying date structure failed to initalize", NSLocalizedRecoverySuggestionErrorKey,
-											nil]];
+		YAML_SET_ERROR(kYAMLErrorInvalidYamlObject, @"Failed to initialize yaml document", @"Underlying data structure failed to initalize");
 		free(document);
 		return NULL;
 	}
@@ -119,12 +107,7 @@ static yaml_document_t* YAMLSerializationToDocument(id yaml, YAMLWriteOptions op
 	}
 	else {
 		//unsupported root element
-		*error = [NSError errorWithDomain: YAMLErrorDomain
-									 code: kYAMLErrorInvalidYamlObject
-								 userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-											@"Yaml object must be either NSDictionary of NSArray. Scalar roots are pointless.", NSLocalizedDescriptionKey,
-											@"Send dictionary or array as yaml document root", NSLocalizedRecoverySuggestionErrorKey,
-											nil]];
+		YAML_SET_ERROR(kYAMLErrorInvalidYamlObject, @"Yaml object must be either NSDictionary of NSArray. Scalar roots are pointless.", @"Send dictionary or array as yaml document root");
 		free(document);
 		return NULL;
 	}
@@ -168,16 +151,9 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
   if (opt & kYAMLReadOptionStringScalars) {
     // Supported
   } else {
-    if (error)
-      *error = [NSError errorWithDomain: YAMLErrorDomain
-                                   code: kYAMLErrorInvalidOptions
-                               userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-                                          @"Currently kYAMLReadOptionStringScalars is supported", NSLocalizedDescriptionKey,
-                                          @"Serialize with kYAMLReadOptionStringScalars option", NSLocalizedRecoverySuggestionErrorKey,
-                                          nil]];
+		YAML_SET_ERROR(kYAMLErrorInvalidOptions, @"Currently only kYAMLReadOptionStringScalars is supported", @"Serialize with kYAMLReadOptionStringScalars option");
 	  return nil;
   }
-
   
   yaml_node_t *node;
   yaml_node_item_t *item;
@@ -187,14 +163,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
 
   objects = (id *)malloc(sizeof(id) * (document->nodes.top - document->nodes.start));
   if (!objects) {
-    //YAML_SET_ERROR(kYAMLErrorCodeOutOfMemory, @"Error in yaml_parser_initialize(&parser)", @"Internal error, please let us know about this error");
-    if (error)
-      *error = [NSError errorWithDomain: YAMLErrorDomain
-                                   code: kYAMLErrorCodeOutOfMemory
-                               userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-                                          @"Couldn't allocate memory", NSLocalizedDescriptionKey,
-                                          @"Please try to free memory and retry", NSLocalizedRecoverySuggestionErrorKey,
-                                          nil]];
+    YAML_SET_ERROR(kYAMLErrorCodeOutOfMemory,  @"Couldn't allocate memory", @"Please try to free memory and retry");
 	  return nil;
   }
   
