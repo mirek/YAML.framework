@@ -254,7 +254,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
     
     if (!done) {
       documentObject = YAMLSerializationWithDocument(&document, opt, error);
-      if (*error) {
+      if (error) {
 		  yaml_document_delete(&document);
       } else {
         [documents addObject: documentObject];
