@@ -51,7 +51,7 @@ static int YAMLSerializationProcessValue(yaml_document_t *document, id value) {
 			int keyId = YAMLSerializationProcessValue(document, key);
 			id keyValue = [value objectForKey:key];
 			int valueId = YAMLSerializationProcessValue(document, keyValue);
-			yaml_document_append_mapping_pair(document, nodeId, keyId, valueId);
+			yaml_document_append_mapping_pair(document, (int) nodeId, keyId, valueId);
 		}
 	}
 	else if ([value isKindOfClass:[NSArray class]] ) {
@@ -59,16 +59,16 @@ static int YAMLSerializationProcessValue(yaml_document_t *document, id value) {
 		nodeId = yaml_document_add_sequence(document, NULL, YAML_BLOCK_SEQUENCE_STYLE);
 		for(id childValue in value) {
 			int childId = YAMLSerializationProcessValue(document, childValue);
-			yaml_document_append_sequence_item(document, nodeId, childId);
+			yaml_document_append_sequence_item(document, (int) nodeId, childId);
 		}
 	}
 	else {
 		if ( ![value isKindOfClass:[NSString class]] ) {
 			value = [value stringValue];
 		}
-		nodeId = yaml_document_add_scalar(document, NULL, (yaml_char_t*)[value UTF8String], [value length], YAML_PLAIN_SCALAR_STYLE);
+		nodeId = yaml_document_add_scalar(document, NULL, (yaml_char_t*)[value UTF8String], (int) [value length], YAML_PLAIN_SCALAR_STYLE);
 	}
-	return nodeId;
+	return (int) nodeId;
 }
 
 // De-serialize single, parsed document. Creates the document
@@ -184,6 +184,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
         objects[i] = [[NSMutableDictionary alloc] initWithCapacity: node->data.mapping.pairs.top - node->data.mapping.pairs.start];
         if (!root) root = objects[i];
         break;
+        default: break;
     }
   }
   
@@ -200,6 +201,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
           [objects[i] setObject: objects[pair->value - 1]
                          forKey: objects[pair->key - 1]];
         break;
+        default: break;
     }
   }
 	
