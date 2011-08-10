@@ -21,12 +21,13 @@ int main() {
 	NSLog(@"YAMLWithData took %f", ([[NSDate date] timeIntervalSince1970] - before));
 	NSLog(@"%@", yaml);
 
+    NSError *err = nil;
 	NSTimeInterval before2 = [[NSDate date] timeIntervalSince1970]; 
-	NSMutableArray *yaml2 = [YAMLSerialization YAMLWithStream: stream options: kYAMLReadOptionStringScalars error: nil];
+	NSMutableArray *yaml2 = [YAMLSerialization YAMLWithStream: stream options: kYAMLReadOptionStringScalars error: &err];
 	NSLog(@"YAMLWithStream took %f", ([[NSDate date] timeIntervalSince1970] - before2));
 	NSLog(@"%@", yaml2);
 	
-	NSError *err = nil;
+    err = nil;
 	NSTimeInterval before3 = [[NSDate date] timeIntervalSince1970]; 
 	NSOutputStream *outStream = [NSOutputStream outputStreamToMemory];
 	[YAMLSerialization writeYAML:yaml toStream:outStream options:kYAMLWriteOptionMultipleDocuments error:&err];
