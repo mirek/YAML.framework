@@ -881,7 +881,7 @@ yaml_parser_fetch_next_token(yaml_parser_t *parser)
 
     /* Check the indentation level against the current column. */
 
-    if (!yaml_parser_unroll_indent(parser, parser->mark.column))
+    if (!yaml_parser_unroll_indent(parser, (int) parser->mark.column))
         return 0;
 
     /*
@@ -1583,7 +1583,7 @@ yaml_parser_fetch_block_entry(yaml_parser_t *parser)
 
         /* Add the BLOCK-SEQUENCE-START token if needed. */
 
-        if (!yaml_parser_roll_indent(parser, parser->mark.column, -1,
+        if (!yaml_parser_roll_indent(parser, (int) parser->mark.column, -1,
                     YAML_BLOCK_SEQUENCE_START_TOKEN, parser->mark))
             return 0;
     }
@@ -1644,7 +1644,7 @@ yaml_parser_fetch_key(yaml_parser_t *parser)
 
         /* Add the BLOCK-MAPPING-START token if needed. */
 
-        if (!yaml_parser_roll_indent(parser, parser->mark.column, -1,
+        if (!yaml_parser_roll_indent(parser, (int) parser->mark.column, -1,
                     YAML_BLOCK_MAPPING_START_TOKEN, parser->mark))
             return 0;
     }
@@ -1700,8 +1700,8 @@ yaml_parser_fetch_value(yaml_parser_t *parser)
 
         /* In the block context, we may need to add the BLOCK-MAPPING-START token. */
 
-        if (!yaml_parser_roll_indent(parser, simple_key->mark.column,
-                    simple_key->token_number,
+        if (!yaml_parser_roll_indent(parser, (int) simple_key->mark.column,
+                    (int) simple_key->token_number,
                     YAML_BLOCK_MAPPING_START_TOKEN, simple_key->mark))
             return 0;
 
@@ -1730,7 +1730,7 @@ yaml_parser_fetch_value(yaml_parser_t *parser)
 
             /* Add the BLOCK-MAPPING-START token if needed. */
 
-            if (!yaml_parser_roll_indent(parser, parser->mark.column, -1,
+            if (!yaml_parser_roll_indent(parser, (int) parser->mark.column, -1,
                         YAML_BLOCK_MAPPING_START_TOKEN, parser->mark))
                 return 0;
         }
