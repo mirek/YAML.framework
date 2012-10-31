@@ -8,6 +8,18 @@
 //
 
 #import "YAMLSerialization.h"
+#include <time.h>
+
+#define eat(str,c) do { 		\
+	int i;						\
+	size_t len = strlen((str));	\
+	for (i = 0; i < len; i++) {	\
+		if ((str)[i] == (c)) {	\
+			memmove((str)+i, (str)+i+1, len-i);	\
+			i--;	\
+		}			\
+	}				\
+} while (0)
 
 NSString *const YAMLErrorDomain = @"com.github.mirek.yaml";
 
@@ -140,6 +152,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
   Class arrayClass = [NSArray class];
   Class dictionaryClass = [NSDictionary class];
   Class stringClass = [NSString class];
+  Class numberClass = [NSNumber class];
   if (opt & kYAMLReadOptionMutableContainers) {
     arrayClass = [NSMutableArray class];
     dictionaryClass = [NSMutableDictionary class];
@@ -170,11 +183,64 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
   // Create all objects, don't fill containers yet...
   for (node = document->nodes.start, i = 0; node < document->nodes.top; node++, i++) {
     switch (node->type) {
-      case YAML_SCALAR_NODE:
-        objects[i] = [[stringClass alloc] initWithUTF8String: (const char *)node->data.scalar.value];
+      case YAML_SCALAR_NODE: {
+	  	char *value = (char *)node->data.scalar.value;
+		if (strcmp((char *)node->tag, YAML_NULL_TAG) == 0) {
+			objects[i] = [NSNull null];
+		} else if (strcmp((char *)node->tag, YAML_BOOL_TAG) == 0) {
+			if (tolower(value[0]) == 'y' ||
+				tolower(value[0]) == 't' ||
+				tolower(value[0]) == 'o')
+				objects[i] = [[numberClass alloc] initWithBool:YES];
+			else
+				objects[i] = [[numberClass alloc] initWithBool:NO];
+		} else if (strcmp((char *)node->tag, YAML_INT_TAG) == 0) {
+			int base = 0;
+			int sign = 0;
+
+			eat(value, '_');
+			sign = value[0] == '+' || value[0] == '-';
+			base = 10;
+			if (strncmp(value + sign, "0b", 2) == 0)
+				base = 2;
+			else if (strncmp(value +sign, "0x", 2) == 0)
+				base = 16;
+			else if (*(value + sign) == '0')
+				base = 8;
+			long v = strtol(value, NULL, base);
+			objects[i] = [[numberClass alloc] initWithLong:v];
+		} else if (strcmp((char *)node->tag, YAML_FLOAT_TAG) == 0) {
+			eat(value, '_');
+			double v;
+			size_t len = strlen(value);
+			if (len >= 3 && tolower(value[len - 3]) == 'n') {
+				v = strtod("NaN", NULL);
+			} else if (len >= 3 && tolower(value[len - 3]) == 'i') {
+				if (value[0] == '-')
+					v = strtod("-INFINITY", NULL);
+				else
+					v = strtod("INFINITY", NULL);
+			} else {
+				v = strtod(value, NULL);
+			}
+
+			objects[i] = [[numberClass alloc] initWithDouble:v];
+		} else if (strcmp((char *)node->tag, YAML_TIMESTAMP_TAG) == 0) {
+			struct tm timestamp;
+			bzero(&timestamp, sizeof(struct tm));
+			if (strptime(value, "%Y-%m-%dT%H:%M:%S %z", &timestamp) != NULL);
+			else if (strptime(value, "%Y-%m-%dt%H:%M:%S %z", &timestamp) != NULL);
+			else if (strptime(value, "%Y-%m-%d %H:%M:%S %z", &timestamp) != NULL);
+			else if (strptime(value, "%Y-%m-%d %H:%M:%S", &timestamp) != NULL);
+			else if (strptime(value, "%Y-%m-%d", &timestamp) != NULL);
+
+			objects[i] = [NSDate dateWithTimeIntervalSince1970:mktime(&timestamp)];
+		} else { /* default is string */
+	        objects[i] = [[stringClass alloc] initWithUTF8String:value];
+		}
         if (!root) root = objects[i];
         break;
-        
+	  }
       case YAML_SEQUENCE_NODE:
         objects[i] = [[NSMutableArray alloc] initWithCapacity: node->data.sequence.items.top - node->data.sequence.items.start];
         if (!root) root = objects[i];
