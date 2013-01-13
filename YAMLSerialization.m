@@ -8,6 +8,7 @@
 //
 
 #import "YAMLSerialization.h"
+#import "MutableObjectWrapper.h"
 
 NSString *const YAMLErrorDomain = @"com.github.mirek.yaml";
 
@@ -134,15 +135,19 @@ static int YAMLSerializationReadHandler(void *data, unsigned char *buffer, size_
 static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptions opt, NSError **error) {
 
   id root = nil;
-  id *objects = nil;
+  id *objects;
+  BOOL copy = (opt & kYAMLReadOptionImmutable);
+  NSMutableSet *mutableContainers = nil;
+  NSMutableArray *mutableTrackingArray = nil;
+    
+  if ( copy )
+  {
+      mutableContainers = [NSMutableSet setWithCapacity:10000];
+      mutableTrackingArray = [NSMutableArray arrayWithCapacity:10000];
+  }
 
-  // Mutability options
-  Class arrayClass = [NSArray class];
-  Class dictionaryClass = [NSDictionary class];
   Class stringClass = [NSString class];
   if (opt & kYAMLReadOptionMutableContainers) {
-    arrayClass = [NSMutableArray class];
-    dictionaryClass = [NSMutableDictionary class];
     if (opt & kYAMLReadOptionMutableContainersAndLeaves) {
       stringClass = [NSMutableString class];
     }
@@ -177,43 +182,85 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
         
       case YAML_SEQUENCE_NODE:
         objects[i] = [[NSMutableArray alloc] initWithCapacity: node->data.sequence.items.top - node->data.sequence.items.start];
+            
+        if ( copy )
+          [mutableContainers addObject:[NSNumber numberWithInt:i]];
+        
         if (!root) root = objects[i];
         break;
         
       case YAML_MAPPING_NODE:
         objects[i] = [[NSMutableDictionary alloc] initWithCapacity: node->data.mapping.pairs.top - node->data.mapping.pairs.start];
+        
+        if ( copy )
+          [mutableContainers addObject:[NSNumber numberWithInt:i]];
+            
         if (!root) root = objects[i];
         break;
         default: break;
     }
   }
   
-  // Fill in containers
+  // Fill in containers respecting mutability option
   for (node = document->nodes.start, i = 0; node < document->nodes.top; node++, i++) {
     switch (node->type) {
       case YAML_SEQUENCE_NODE:
         for (item = node->data.sequence.items.start; item < node->data.sequence.items.top; item++)
-          [objects[i] addObject: objects[*item - 1]];
+        {
+            [objects[i] addObject: objects[*item - 1]];
+
+           if ( copy && [mutableContainers containsObject:[NSNumber numberWithInt:*item-1]])
+           {
+               MutableObjectWrapper *mutableChild = [[MutableObjectWrapper alloc] initWithParent:objects[i] childIndex:[objects[i] count]-1 childKey:nil];
+               [mutableTrackingArray addObject:mutableChild];
+               [mutableChild release];
+           }
+        }
         break;
-        
+            
       case YAML_MAPPING_NODE:
         for (pair = node->data.mapping.pairs.start; pair < node->data.mapping.pairs.top; pair++)
-          [objects[i] setObject: objects[pair->value - 1]
-                         forKey: objects[pair->key - 1]];
+        {
+            [objects[i] setObject: objects[pair->value - 1]
+                           forKey: objects[pair->key - 1]];
+            
+            if ( copy && [mutableContainers containsObject:[NSNumber numberWithInt:pair->value - 1]])
+            {
+                MutableObjectWrapper *mutableChild = [[MutableObjectWrapper alloc] initWithParent:objects[i] childIndex:-1 childKey:objects[pair->key - 1]];
+                [mutableTrackingArray addObject:mutableChild];
+                [mutableChild release];
+            }
+
+        }
+            
         break;
         default: break;
     }
   }
-	
+    
+  //now lazy copy the captured mutable types to immutable types
+  if ( copy && mutableTrackingArray.count )
+  {
+      //this call to copy does not do a full copy it merely returns self to an immutable type in cocoa - near zero cost.
+      [mutableTrackingArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+          [obj transferImmutableCopy];
+      }];
+      
+      [mutableTrackingArray release];
+  }
+    
+  
+    
   // Retain the root object
-  if (root)
-    [root retain];
+  [root retain];
   
   // Release all objects. The root object and all referenced (in containers) objects
   // will have retain count > 0
   for (node = document->nodes.start, i = 0; node < document->nodes.top; node++, i++)
-    [objects[i] release];
-
+  {
+      [objects[i] release];
+  }
+    
   if (objects)
     free(objects);
   
@@ -224,12 +271,14 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
 
 @implementation YAMLSerialization
 
-+ (NSMutableArray *) YAMLWithStream: (NSInputStream *) stream 
++ (NSArray *) YAMLWithStream: (NSInputStream *) stream
                             options: (YAMLReadOptions) opt
                               error: (NSError **) error
 {
   NSMutableArray *documents = [NSMutableArray array];
   id documentObject = nil;
+  BOOL copy = (opt & kYAMLReadOptionImmutable);
+
   
   yaml_parser_t parser;
   yaml_document_t document;
@@ -259,7 +308,14 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
       if (error && *error) {
 		  yaml_document_delete(&document);
       } else {
-        [documents addObject: documentObject];
+        if ( copy && ([documentObject isKindOfClass:[NSArray class]] || [documentObject isKindOfClass:[NSDictionary class]]))
+        {
+            [documents addObject: [documentObject copy]];
+        }
+        else
+        {
+            [documents addObject: documentObject];
+        }
         [documentObject release];
       }
     }
@@ -267,18 +323,23 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
     // TODO: Check if aliases to previous documents are allowed by the specs
     yaml_document_delete(&document);
   }
+    
+  if ( copy )
+  {
+      documents = [documents copy];
+  }
   
 	yaml_parser_delete(&parser);
 	return documents;
 }
 
-+ (NSMutableArray *) YAMLWithData: (NSData *) data
++ (NSArray *) YAMLWithData: (NSData *) data
                           options: (YAMLReadOptions) opt
                             error: (NSError **) error;
 {
   if (data) {
     NSInputStream *inputStream = [NSInputStream inputStreamWithData:data];
-    NSMutableArray *documents = [self YAMLWithStream: inputStream options: opt error: error];
+    NSArray *documents = [self YAMLWithStream: inputStream options: opt error: error];
     return documents;
   } 
   else {
