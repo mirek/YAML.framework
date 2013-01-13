@@ -140,10 +140,10 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
   NSMutableSet *mutableContainers = nil;
   NSMutableArray *mutableTrackingArray = nil;
     
-  if ( copy )
+  if (copy)
   {
-      mutableContainers = [NSMutableSet setWithCapacity:10000];
-      mutableTrackingArray = [NSMutableArray arrayWithCapacity:10000];
+      mutableContainers = [NSMutableSet setWithCapacity:(document->nodes.top - document->nodes.start)];
+      mutableTrackingArray = [NSMutableArray arrayWithCapacity:(document->nodes.top - document->nodes.start)];
   }
 
   Class stringClass = [NSString class];
@@ -183,7 +183,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
       case YAML_SEQUENCE_NODE:
         objects[i] = [[NSMutableArray alloc] initWithCapacity: node->data.sequence.items.top - node->data.sequence.items.start];
             
-        if ( copy )
+        if (copy)
           [mutableContainers addObject:[NSNumber numberWithInt:i]];
         
         if (!root) root = objects[i];
@@ -192,7 +192,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
       case YAML_MAPPING_NODE:
         objects[i] = [[NSMutableDictionary alloc] initWithCapacity: node->data.mapping.pairs.top - node->data.mapping.pairs.start];
         
-        if ( copy )
+        if (copy)
           [mutableContainers addObject:[NSNumber numberWithInt:i]];
             
         if (!root) root = objects[i];
@@ -209,7 +209,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
         {
             [objects[i] addObject: objects[*item - 1]];
 
-           if ( copy && [mutableContainers containsObject:[NSNumber numberWithInt:*item-1]])
+           if (copy && [mutableContainers containsObject:[NSNumber numberWithInt:*item-1]])
            {
                MutableObjectWrapper *mutableChild = [[MutableObjectWrapper alloc] initWithParent:objects[i] childIndex:[objects[i] count]-1 childKey:nil];
                [mutableTrackingArray addObject:mutableChild];
@@ -224,7 +224,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
             [objects[i] setObject: objects[pair->value - 1]
                            forKey: objects[pair->key - 1]];
             
-            if ( copy && [mutableContainers containsObject:[NSNumber numberWithInt:pair->value - 1]])
+            if (copy && [mutableContainers containsObject:[NSNumber numberWithInt:pair->value - 1]])
             {
                 MutableObjectWrapper *mutableChild = [[MutableObjectWrapper alloc] initWithParent:objects[i] childIndex:-1 childKey:objects[pair->key - 1]];
                 [mutableTrackingArray addObject:mutableChild];
@@ -239,7 +239,7 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
   }
     
   //now lazy copy the captured mutable types to immutable types
-  if ( copy && mutableTrackingArray.count )
+  if (copy)
   {
       //this call to copy does not do a full copy it merely returns self to an immutable type in cocoa - near zero cost.
       [mutableTrackingArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -247,12 +247,14 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
       }];
       
       [mutableTrackingArray release];
+      [mutableContainers release];
   }
     
   
     
   // Retain the root object
-  [root retain];
+  if (root)
+    [root retain];
   
   // Release all objects. The root object and all referenced (in containers) objects
   // will have retain count > 0
