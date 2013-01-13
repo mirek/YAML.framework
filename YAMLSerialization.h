@@ -47,11 +47,11 @@ extern NSString *const YAMLErrorDomain;
                   options: (YAMLWriteOptions) opt
                     error: (NSError **) error;
 
-+ (NSMutableArray *) YAMLWithStream: (NSInputStream *) stream 
++ (NSArray *) YAMLWithStream: (NSInputStream *) stream
                             options: (YAMLReadOptions) opt
                               error: (NSError **) error;
 
-+ (NSMutableArray *) YAMLWithData: (NSData *) data
++ (NSArray *) YAMLWithData: (NSData *) data
                           options: (YAMLReadOptions) opt
                             error: (NSError **) error;
 
