@@ -20,7 +20,46 @@ NSString *const YAMLErrorDomain = @"com.github.mirek.yaml";
                                         description, NSLocalizedDescriptionKey, \
                                         recovery, NSLocalizedRecoverySuggestionErrorKey, \
                                         nil]]
+static NSNumber *ParseBoolean(NSString *str) {
+    for (NSString *s in @[@"y", @"yes", @"true", @"on"])
+        if ([s isEqualToString:str.lowercaseString])
+            return @YES;
+    for (NSString *s in @[@"n", @"no", @"false", @"off"])
+        if ([s isEqualToString:str.lowercaseString])
+            return @NO;
+    return nil;
+}
 
+static NSNumber *ParseNumber(NSString *str) {
+    static dispatch_once_t numberFormatterOnceToken;
+    static NSNumberFormatter *numberFormatter = nil;
+    dispatch_once(&numberFormatterOnceToken, ^{
+        numberFormatter = [[NSNumberFormatter alloc] init];
+    });
+    NSNumber *number = nil;
+    if ([numberFormatter getObjectValue:&number forString:str errorDescription:nil])
+        return [number autorelease];
+    return nil;
+}
+
+static NSDate *ParseDate(NSString *str) {
+    static dispatch_once_t dateFormatterOnceToken;
+    static NSDateFormatter *dateFormatter = nil;
+    dispatch_once(&dateFormatterOnceToken, ^{
+        dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateFormat = @"yyyy-MM-dd";
+    });
+    NSDate *date;
+    if ([dateFormatter getObjectValue:&date forString:str errorDescription:nil])
+        return [date autorelease];
+    return nil;
+}
+
+static NSNull *ParseNull(NSString *str) {
+    if (str.length == 0 || [str isEqualToString:@"~"] || [str.lowercaseString isEqualToString:@"null"])
+        return [NSNull null];
+    return nil;
+}
 
 #pragma mark Write support
 #pragma mark -
@@ -148,13 +187,6 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
     }
   }
   
-  if (opt & kYAMLReadOptionStringScalars) {
-    // Supported
-  } else {
-		YAML_SET_ERROR(kYAMLErrorInvalidOptions, @"Currently only kYAMLReadOptionStringScalars is supported", @"Serialize with kYAMLReadOptionStringScalars option");
-	  return nil;
-  }
-  
   yaml_node_t *node;
   yaml_node_item_t *item;
   yaml_node_pair_t *pair;
@@ -170,11 +202,15 @@ static id YAMLSerializationWithDocument(yaml_document_t *document, YAMLReadOptio
   // Create all objects, don't fill containers yet...
   for (node = document->nodes.start, i = 0; node < document->nodes.top; node++, i++) {
     switch (node->type) {
-      case YAML_SCALAR_NODE:
-        objects[i] = [[stringClass alloc] initWithUTF8String: (const char *)node->data.scalar.value];
+      case YAML_SCALAR_NODE: {
+        id value = [[stringClass alloc] initWithUTF8String: (const char *)node->data.scalar.value];
+        if (!(opt & kYAMLReadOptionStringScalars)) {
+          value = ParseNull(value) ?: ParseBoolean(value) ?: ParseNumber(value) ?: ParseDate(value) ?: value;
+        }
+        objects[i] = value;
         if (!root) root = objects[i];
         break;
-        
+      }
       case YAML_SEQUENCE_NODE:
         objects[i] = [[NSMutableArray alloc] initWithCapacity: node->data.sequence.items.top - node->data.sequence.items.start];
         if (!root) root = objects[i];
