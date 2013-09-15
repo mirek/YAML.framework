@@ -17,30 +17,30 @@ int main() {
 	NSLog(@"done.");
 
 	NSTimeInterval before = [[NSDate date] timeIntervalSince1970];
-	NSMutableArray *yaml = [YAMLSerialization YAMLWithData: data options: kYAMLReadOptionStringScalars error: nil];
+	NSMutableArray *yaml = [YAMLSerialization objectsWithYAMLData: data options: kYAMLReadOptionStringScalars error: nil];
 	NSLog(@"YAMLWithData took %f", ([[NSDate date] timeIntervalSince1970] - before));
 	NSLog(@"%@", yaml);
 
     NSError *err = nil;
 	NSTimeInterval before2 = [[NSDate date] timeIntervalSince1970]; 
-	NSMutableArray *yaml2 = [YAMLSerialization YAMLWithStream: stream options: kYAMLReadOptionStringScalars error: &err];
+	NSMutableArray *yaml2 = [YAMLSerialization objectsWithYAMLStream: stream options: kYAMLReadOptionStringScalars error: &err];
 	NSLog(@"YAMLWithStream took %f", ([[NSDate date] timeIntervalSince1970] - before2));
 	NSLog(@"%@", yaml2);
 	
     err = nil;
 	NSTimeInterval before3 = [[NSDate date] timeIntervalSince1970]; 
 	NSOutputStream *outStream = [NSOutputStream outputStreamToMemory];
-	[YAMLSerialization writeYAML:yaml toStream:outStream options:kYAMLWriteOptionMultipleDocuments error:&err];
+	[YAMLSerialization writeObject: yaml toYAMLStream: outStream options: kYAMLWriteOptionMultipleDocuments error: &err];
 	if (err) {
 		NSLog(@"Error: %@", err);
 		[pool release];
 		return -1;
 	}
-	NSLog(@"writeYAML took %f", ([[NSDate date] timeIntervalSince1970] - before3));
+	NSLog(@"writeYAML took %f", (float) ([[NSDate date] timeIntervalSince1970] - before3));
 	NSLog(@"out stream %@", outStream);
 	
 	NSTimeInterval before4 = [[NSDate date] timeIntervalSince1970]; 
-	NSData *outData = [YAMLSerialization dataFromYAML:yaml2 options:kYAMLWriteOptionMultipleDocuments error:&err];
+	NSData *outData = [YAMLSerialization YAMLDataWithObject: yaml2 options: kYAMLWriteOptionMultipleDocuments error: &err];
 	if (!outData) {
 		NSLog(@"Data is nil!");
 		[pool release];
