@@ -13,13 +13,13 @@ NSString *const YAMLErrorDomain = @"com.github.mirek.yaml";
 
 // Assumes NSError **error is in the current scope
 #define YAML_SET_ERROR(errorCode, description, recovery) \
-  if (error) \
-    *error = [NSError errorWithDomain: YAMLErrorDomain \
-                                 code: errorCode \
-                             userInfo: [NSDictionary dictionaryWithObjectsAndKeys: \
-                                        description, NSLocalizedDescriptionKey, \
-                                        recovery, NSLocalizedRecoverySuggestionErrorKey, \
-                                        nil]]
+    if (error) \
+        *error = [NSError errorWithDomain: YAMLErrorDomain \
+                                     code: errorCode \
+                                 userInfo: [NSDictionary dictionaryWithObjectsAndKeys: \
+                                            description, NSLocalizedDescriptionKey, \
+                                            recovery, NSLocalizedRecoverySuggestionErrorKey, \
+                                            nil]]
 
 @implementation YAMLSerialization
 
@@ -127,11 +127,11 @@ __YAMLSerializationObjectWithYAMLDocument (yaml_document_t *document, YAMLReadOp
     for (node = document->nodes.start, i = 0; node < document->nodes.top; node++, i++) {
         [objects[i] release];
     }
-    
+
     if (objects != NULL) {
         free(objects);
     }
-    
+
     return root;
 }
 
@@ -211,8 +211,8 @@ __YAMLSerializationObjectWithYAMLDocument (yaml_document_t *document, YAMLReadOp
                                      error: (NSError **) error;
 {
     return [self objectsWithYAMLData: [string dataUsingEncoding: NSUTF8StringEncoding]
-                               options: opt
-                                 error: error];
+                             options: opt
+                               error: error];
 }
 
 + (id) objectWithYAMLString: (NSString *) string options: (YAMLReadOptions) opt error: (NSError **) error {
@@ -267,7 +267,7 @@ __YAMLSerializationAddObject (yaml_document_t *document, id value) {
         yaml_emitter_dump(emitter, &document);
         yaml_document_delete(&document);
 	} else {
-//        YAML_SET_ERROR(kYAMLErrorInvalidYamlObject, @"Failed to initialize yaml document", @"Underlying data structure failed to initalize");
+        //        YAML_SET_ERROR(kYAMLErrorInvalidYamlObject, @"Failed to initialize yaml document", @"Underlying data structure failed to initalize");
         result = NO;
     }
     return result;
