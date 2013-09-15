@@ -8,12 +8,13 @@
 #import <Foundation/Foundation.h>
 #import "YAMLSerialization.h"
 
-int main() {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+int
+test (int argc, char *argv[]) {
+    int result = 0;
 
 	NSLog(@"reading test file... ");
 	NSData *data = [NSData dataWithContentsOfFile: @"yaml/basic.yaml"];
-	NSInputStream *stream = [[NSInputStream alloc] initWithFileAtPath: @"yaml/basic.yaml"];
+	NSInputStream *stream = [[[NSInputStream alloc] initWithFileAtPath: @"yaml/basic.yaml"] autorelease];
 	NSLog(@"done.");
 
 	NSTimeInterval before = [[NSDate date] timeIntervalSince1970];
@@ -33,7 +34,6 @@ int main() {
 	[YAMLSerialization writeObject: yaml toYAMLStream: outStream options: kYAMLWriteOptionMultipleDocuments error: &err];
 	if (err) {
 		NSLog(@"Error: %@", err);
-		[pool release];
 		return -1;
 	}
 	NSLog(@"writeYAML took %f", (float) ([[NSDate date] timeIntervalSince1970] - before3));
@@ -43,13 +43,19 @@ int main() {
 	NSData *outData = [YAMLSerialization YAMLDataWithObject: yaml2 options: kYAMLWriteOptionMultipleDocuments error: &err];
 	if (!outData) {
 		NSLog(@"Data is nil!");
-		[pool release];
 		return -1;
 	}
 	NSLog(@"dataFromYAML took %f", ([[NSDate date] timeIntervalSince1970] - before4));
 	NSLog(@"out data %@", outData);
 
-	[pool release];
+    return result;
+}
 
-	return 0;
+int
+main (int argc, char *argv[]) {
+    int result = 0;
+    @autoreleasepool {
+        result = test(argc, argv);
+    }
+	return result;
 }

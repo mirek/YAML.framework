@@ -1,6 +1,6 @@
 
 #if HAVE_CONFIG_H
-#include <config.h>
+#import "config.h"
 #endif
 
 #include <yaml.h>
