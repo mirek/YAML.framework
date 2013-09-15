@@ -1,7 +1,7 @@
 //
 //  YAMLSerialization.m
 //  YAML Serialization support by Mirek Rusin based on C library LibYAML by Kirill Simonov
-//	Released under MIT License
+//  Released under MIT License
 //
 //  Copyright 2010 Mirek Rusin
 //  Copyright 2010 Stanislav Yudin
@@ -59,7 +59,7 @@ __YAMLSerializationObjectWithYAMLDocument (yaml_document_t *document, YAMLReadOp
     if (opt & kYAMLReadOptionStringScalars) {
         // Supported
     } else {
-		YAML_SET_ERROR(kYAMLErrorInvalidOptions, @"Currently only kYAMLReadOptionStringScalars is supported", @"Serialize with kYAMLReadOptionStringScalars option");
+        YAML_SET_ERROR(kYAMLErrorInvalidOptions, @"Currently only kYAMLReadOptionStringScalars is supported", @"Serialize with kYAMLReadOptionStringScalars option");
         return nil;
     }
 
@@ -180,9 +180,9 @@ __YAMLSerializationObjectWithYAMLDocument (yaml_document_t *document, YAMLReadOp
         yaml_document_delete(&document);
     }
 
-	yaml_parser_delete(&parser);
+    yaml_parser_delete(&parser);
 
-	return documents;
+    return documents;
 }
 
 + (id) objectWithYAMLStream: (NSInputStream *) stream options: (YAMLReadOptions) opt error: (NSError **) error {
@@ -223,50 +223,50 @@ __YAMLSerializationObjectWithYAMLDocument (yaml_document_t *document, YAMLReadOp
 
 static int
 __YAMLSerializationEmitterOutputWriteHandler (void *data, unsigned char *buffer, size_t size) {
-	return ([((NSOutputStream *) data) write: buffer maxLength: size] > 0);
+    return ([((NSOutputStream *) data) write: buffer maxLength: size] > 0);
 }
 
 static int
 __YAMLSerializationAddObject (yaml_document_t *document, id value) {
-	int result = 0;
-	if ([value isKindOfClass: [NSDictionary class]] ) {
-		result = yaml_document_add_mapping(document, NULL, YAML_BLOCK_MAPPING_STYLE);
-		for (id key in [value allKeys]) {
-			int keyIndex = __YAMLSerializationAddObject(document, key);
-			int valueIndex = __YAMLSerializationAddObject(document, [value objectForKey: key]);
-			yaml_document_append_mapping_pair(document, result, keyIndex, valueIndex);
-		}
-	}
-    else if ([value isKindOfClass: [NSArray class]]) {
-		result = yaml_document_add_sequence(document, NULL, YAML_BLOCK_SEQUENCE_STYLE);
-		for (id element in value) {
-			int elementIndex = __YAMLSerializationAddObject(document, element);
-			yaml_document_append_sequence_item(document, result, elementIndex);
-		}
-	}
-	else {
-        NSString *string = nil;
-		if ([value isKindOfClass: [NSString class]]) {
-            string = value;
-		} else {
-			string = [value stringValue];
+    int result = 0;
+    if ([value isKindOfClass: [NSDictionary class]] ) {
+        result = yaml_document_add_mapping(document, NULL, YAML_BLOCK_MAPPING_STYLE);
+        for (id key in [value allKeys]) {
+            int keyIndex = __YAMLSerializationAddObject(document, key);
+            int valueIndex = __YAMLSerializationAddObject(document, [value objectForKey: key]);
+            yaml_document_append_mapping_pair(document, result, keyIndex, valueIndex);
         }
-		result = yaml_document_add_scalar(document, NULL, (yaml_char_t *)[string UTF8String], (int) [string length], YAML_PLAIN_SCALAR_STYLE);
-	}
-	return (int) result;
+    }
+    else if ([value isKindOfClass: [NSArray class]]) {
+        result = yaml_document_add_sequence(document, NULL, YAML_BLOCK_SEQUENCE_STYLE);
+        for (id element in value) {
+            int elementIndex = __YAMLSerializationAddObject(document, element);
+            yaml_document_append_sequence_item(document, result, elementIndex);
+        }
+    }
+    else {
+        NSString *string = nil;
+        if ([value isKindOfClass: [NSString class]]) {
+            string = value;
+        } else {
+            string = [value stringValue];
+        }
+        result = yaml_document_add_scalar(document, NULL, (yaml_char_t *)[string UTF8String], (int) [string length], YAML_PLAIN_SCALAR_STYLE);
+    }
+    return (int) result;
 }
 
 + (BOOL) __YAMLSerializationAddRootObjectAndEmit: (id) object emitter: (yaml_emitter_t *) emitter {
     BOOL result = YES;
-	yaml_document_t document;
+    yaml_document_t document;
     memset(&document, 0, sizeof(yaml_document_t));
-	if (yaml_document_initialize(&document, NULL, NULL, NULL, 0, 0)) {
+    if (yaml_document_initialize(&document, NULL, NULL, NULL, 0, 0)) {
         __YAMLSerializationAddObject(&document, object);
 
         // TODO: check result code.
         yaml_emitter_dump(emitter, &document);
         yaml_document_delete(&document);
-	} else {
+    } else {
         //        YAML_SET_ERROR(kYAMLErrorInvalidYamlObject, @"Failed to initialize yaml document", @"Underlying data structure failed to initalize");
         result = NO;
     }
@@ -279,36 +279,36 @@ __YAMLSerializationAddObject (yaml_document_t *document, id value) {
                error: (NSError **) error
 {
     BOOL result = YES;
-	yaml_emitter_t emitter;
+    yaml_emitter_t emitter;
     memset(&emitter, 0, sizeof(yaml_emitter_t));
 
-	if (!yaml_emitter_initialize(&emitter)) {
-		YAML_SET_ERROR(kYAMLErrorCodeEmitterError, @"Error in yaml_emitter_initialize(&emitter)", @"Internal error, please let us know about this error");
-		return NO;
-	}
+    if (!yaml_emitter_initialize(&emitter)) {
+        YAML_SET_ERROR(kYAMLErrorCodeEmitterError, @"Error in yaml_emitter_initialize(&emitter)", @"Internal error, please let us know about this error");
+        return NO;
+    }
 
-	yaml_emitter_set_encoding(&emitter, YAML_UTF8_ENCODING);
-	yaml_emitter_set_output(&emitter, __YAMLSerializationEmitterOutputWriteHandler, (void *)stream);
+    yaml_emitter_set_encoding(&emitter, YAML_UTF8_ENCODING);
+    yaml_emitter_set_output(&emitter, __YAMLSerializationEmitterOutputWriteHandler, (void *)stream);
 
-	// Open output stream.
-	[stream open];
+    // Open output stream.
+    [stream open];
 
-	if (kYAMLWriteOptionMultipleDocuments & opt) {
+    if (kYAMLWriteOptionMultipleDocuments & opt) {
 
-		// YAML is an array of documents.
-		for (id child in object) {
+        // YAML is an array of documents.
+        for (id child in object) {
 
             // TODO: Check result code.
             [self __YAMLSerializationAddRootObjectAndEmit: object emitter: &emitter];
-		}
-	}
+        }
+    }
     else {
 
         // YAML is a single document.
         [self __YAMLSerializationAddRootObjectAndEmit: object emitter: &emitter];
-	}
+    }
 
-	[stream close];
+    [stream close];
     yaml_emitter_delete(&emitter);
 
     return result;
