@@ -13,15 +13,15 @@
 		D319EEB413E5EE2A000EB46D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D319EEB213E5EE2A000EB46D /* InfoPlist.strings */; };
 		D319EEB713E5EE2A000EB46D /* YAMLUnitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D319EEB613E5EE2A000EB46D /* YAMLUnitTests.m */; };
 		D319EEBD13E5EFA5000EB46D /* YAMLSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF83D8A124D7A3E008517E5 /* YAMLSerialization.m */; };
-		D319EEBE13E5F093000EB46D /* (null) in Sources */ = {isa = PBXBuildFile; };
-		D319EEBF13E5F093000EB46D /* (null) in Sources */ = {isa = PBXBuildFile; };
-		D319EEC013E5F093000EB46D /* (null) in Sources */ = {isa = PBXBuildFile; };
-		D319EEC113E5F093000EB46D /* (null) in Sources */ = {isa = PBXBuildFile; };
-		D319EEC213E5F093000EB46D /* (null) in Sources */ = {isa = PBXBuildFile; };
-		D319EEC313E5F093000EB46D /* (null) in Sources */ = {isa = PBXBuildFile; };
-		D319EEC413E5F093000EB46D /* (null) in Sources */ = {isa = PBXBuildFile; };
-		D319EEC513E5F093000EB46D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		D3E92E6413E5F68C00BA5B63 /* basic.yaml in Resources */ = {isa = PBXBuildFile; fileRef = D3E92E6313E5F68C00BA5B63 /* basic.yaml */; };
+		D58802A818AC5B1800D5E01A /* api.c in Sources */ = {isa = PBXBuildFile; fileRef = EB8C1AB114B795E200BCDC1A /* api.c */; };
+		D58802A918AC5B1800D5E01A /* dumper.c in Sources */ = {isa = PBXBuildFile; fileRef = EB8C1AB214B795E200BCDC1A /* dumper.c */; };
+		D58802AA18AC5B1800D5E01A /* emitter.c in Sources */ = {isa = PBXBuildFile; fileRef = EB8C1AB314B795E200BCDC1A /* emitter.c */; };
+		D58802AB18AC5B1800D5E01A /* loader.c in Sources */ = {isa = PBXBuildFile; fileRef = EB8C1AB414B795E200BCDC1A /* loader.c */; };
+		D58802AC18AC5B1800D5E01A /* parser.c in Sources */ = {isa = PBXBuildFile; fileRef = EB8C1AB514B795E200BCDC1A /* parser.c */; };
+		D58802AD18AC5B1800D5E01A /* reader.c in Sources */ = {isa = PBXBuildFile; fileRef = EB8C1AB614B795E200BCDC1A /* reader.c */; };
+		D58802AE18AC5B1800D5E01A /* scanner.c in Sources */ = {isa = PBXBuildFile; fileRef = EB8C1AB714B795E200BCDC1A /* scanner.c */; };
+		D58802AF18AC5B1800D5E01A /* writer.c in Sources */ = {isa = PBXBuildFile; fileRef = EB8C1AB814B795E200BCDC1A /* writer.c */; };
 		EB2B592E124E2117001FFEEB /* events.c in Sources */ = {isa = PBXBuildFile; fileRef = EB2B592D124E2117001FFEEB /* events.c */; };
 		EB2B5952124E230A001FFEEB /* yaml in Copy YAML Files */ = {isa = PBXBuildFile; fileRef = EB6C424F124D9B3E00886AD1 /* yaml */; };
 		EB6C3FBA124D872600886AD1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6C3FB9124D872600886AD1 /* Foundation.framework */; };
@@ -508,16 +508,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D58802A818AC5B1800D5E01A /* api.c in Sources */,
+				D58802A918AC5B1800D5E01A /* dumper.c in Sources */,
+				D58802AA18AC5B1800D5E01A /* emitter.c in Sources */,
+				D58802AB18AC5B1800D5E01A /* loader.c in Sources */,
+				D58802AC18AC5B1800D5E01A /* parser.c in Sources */,
+				D58802AD18AC5B1800D5E01A /* reader.c in Sources */,
+				D58802AE18AC5B1800D5E01A /* scanner.c in Sources */,
+				D58802AF18AC5B1800D5E01A /* writer.c in Sources */,
 				D319EEB713E5EE2A000EB46D /* YAMLUnitTests.m in Sources */,
 				D319EEBD13E5EFA5000EB46D /* YAMLSerialization.m in Sources */,
-				D319EEBE13E5F093000EB46D /* (null) in Sources */,
-				D319EEBF13E5F093000EB46D /* (null) in Sources */,
-				D319EEC013E5F093000EB46D /* (null) in Sources */,
-				D319EEC113E5F093000EB46D /* (null) in Sources */,
-				D319EEC213E5F093000EB46D /* (null) in Sources */,
-				D319EEC313E5F093000EB46D /* (null) in Sources */,
-				D319EEC413E5F093000EB46D /* (null) in Sources */,
-				D319EEC513E5F093000EB46D /* (null) in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -654,7 +654,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
@@ -673,6 +673,7 @@
 				INFOPLIST_FILE = "YAMLUnitTests/YAMLUnitTests-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "-DHAVE_CONFIG_H";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = octest;
@@ -683,7 +684,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -696,6 +697,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				INFOPLIST_FILE = "YAMLUnitTests/YAMLUnitTests-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_CFLAGS = "-DHAVE_CONFIG_H";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = octest;
