@@ -39,10 +39,7 @@ static NSNumber *ParseNumber(NSString *str) {
     dispatch_once(&numberFormatterOnceToken, ^{
         numberFormatter = [[NSNumberFormatter alloc] init];
     });
-    NSNumber *number = nil;
-    if ([numberFormatter getObjectValue:&number forString:str errorDescription:nil])
-        return [number autorelease];
-    return nil;
+    return [[numberFormatter numberFromString:str] retain];
 }
 
 static NSDate *ParseDate(NSString *str) {
@@ -52,10 +49,7 @@ static NSDate *ParseDate(NSString *str) {
         dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.dateFormat = @"yyyy-MM-dd";
     });
-    NSDate *date;
-    if ([dateFormatter getObjectValue:&date forString:str errorDescription:nil])
-        return [date autorelease];
-    return nil;
+    return [[dateFormatter dateFromString:str] retain];
 }
 
 static NSNull *ParseNull(NSString *str) {
