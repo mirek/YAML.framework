@@ -28,11 +28,11 @@
 - (void)testReadData
 {
     NSString *fileName = [[NSBundle bundleForClass:[self class]] pathForResource:@"basic" ofType:@"yaml"];
-	NSData *data = [NSData dataWithContentsOfFile:fileName];
+    NSData *data = [NSData dataWithContentsOfFile:fileName];
     NSTimeInterval before = [[NSDate date] timeIntervalSince1970];
-	NSMutableArray *yaml = [YAMLSerialization YAMLWithData: data options: kYAMLReadOptionStringScalars error: nil];
-	NSLog(@"YAMLWithData took %f", ([[NSDate date] timeIntervalSince1970] - before));
-	NSLog(@"%@", yaml);
+    NSMutableArray *yaml = [YAMLSerialization YAMLWithData: data options: kYAMLReadOptionStringScalars error: nil];
+    NSLog(@"YAMLWithData took %f", ([[NSDate date] timeIntervalSince1970] - before));
+    NSLog(@"%@", yaml);
     STAssertEquals((int) 10, (int) [yaml count], @"Wrong number of expected objects");
 
 }
@@ -42,10 +42,10 @@
     NSString *fileName = [[NSBundle bundleForClass:[self class]] pathForResource:@"basic" ofType:@"yaml"];
     NSInputStream *stream = [[NSInputStream alloc] initWithFileAtPath: fileName];
     NSError *err = nil;
-	NSTimeInterval before2 = [[NSDate date] timeIntervalSince1970]; 
-	NSMutableArray *yaml2 = [YAMLSerialization YAMLWithStream: stream options: kYAMLReadOptionStringScalars error: &err];
-	NSLog(@"YAMLWithStream took %f", ([[NSDate date] timeIntervalSince1970] - before2));
-	NSLog(@"%@", yaml2);
+    NSTimeInterval before2 = [[NSDate date] timeIntervalSince1970]; 
+    NSMutableArray *yaml2 = [YAMLSerialization YAMLWithStream: stream options: kYAMLReadOptionStringScalars error: &err];
+    NSLog(@"YAMLWithStream took %f", ([[NSDate date] timeIntervalSince1970] - before2));
+    NSLog(@"%@", yaml2);
     STAssertEquals((int) 10, (int) [yaml2 count], @"Wrong number of expected objects");
     
 }

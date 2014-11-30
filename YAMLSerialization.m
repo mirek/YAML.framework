@@ -1,7 +1,7 @@
 //
 //  YAMLSerialization.m
 //  YAML Serialization support by Mirek Rusin based on C library LibYAML by Kirill Simonov
-//  Released under MIT License
+//    Released under MIT License
 //
 //  Copyright 2010 Mirek Rusin
 //  Copyright 2010 Stanislav Yudin
@@ -13,28 +13,63 @@ NSString *const YAMLErrorDomain = @"com.github.mirek.yaml";
 
 // Assumes NSError **error is in the current scope
 #define YAML_SET_ERROR(errorCode, description, recovery) \
-    if (error) \
-        *error = [NSError errorWithDomain: YAMLErrorDomain \
-                                     code: errorCode \
-                                 userInfo: [NSDictionary dictionaryWithObjectsAndKeys: \
-                                            description, NSLocalizedDescriptionKey, \
-                                            recovery, NSLocalizedRecoverySuggestionErrorKey, \
-                                            nil]]
+  if (error) \
+    *error = [NSError errorWithDomain: YAMLErrorDomain \
+                                 code: errorCode \
+                             userInfo: [NSDictionary dictionaryWithObjectsAndKeys: \
+                                        description, NSLocalizedDescriptionKey, \
+                                        recovery, NSLocalizedRecoverySuggestionErrorKey, \
+                                        nil]]
 
 @implementation YAMLSerialization
+
+static NSNumber *ParseBoolean(NSString *str) {
+    for (NSString *s in @[@"y", @"yes", @"true", @"on"])
+        if ([s isEqualToString:str.lowercaseString])
+            return @YES;
+    for (NSString *s in @[@"n", @"no", @"false", @"off"])
+        if ([s isEqualToString:str.lowercaseString])
+            return @NO;
+    return nil;
+}
+
+static NSNumber *ParseNumber(NSString *str) {
+    static dispatch_once_t numberFormatterOnceToken;
+    static NSNumberFormatter *numberFormatter = nil;
+    dispatch_once(&numberFormatterOnceToken, ^{
+        numberFormatter = [[NSNumberFormatter alloc] init];
+    });
+    return [[numberFormatter numberFromString:str] retain];
+}
+
+static NSDate *ParseDate(NSString *str) {
+    static dispatch_once_t dateFormatterOnceToken;
+    static NSDateFormatter *dateFormatter = nil;
+    dispatch_once(&dateFormatterOnceToken, ^{
+        dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateFormat = @"yyyy-MM-dd";
+    });
+    return [[dateFormatter dateFromString:str] retain];
+}
+
+static NSNull *ParseNull(NSString *str) {
+    if (str.length == 0 || [str isEqualToString:@"~"] || [str.lowercaseString isEqualToString:@"null"])
+        return [NSNull null];
+    return nil;
+}
 
 #pragma mark Reading YAML
 
 static int
 __YAMLSerializationParserInputReadHandler (void *data, unsigned char *buffer, size_t size, size_t *size_read) {
     NSInteger outcome = [(NSInputStream *) data read: (uint8_t *) buffer maxLength: size];
-    if (outcome < 0) {
-        *size_read = 0;
-        return NO;
-    } else {
-        *size_read = outcome;
-        return YES;
-    }
+  if (outcome < 0) {
+    *size_read = 0;
+    return NO;
+  } else {
+    *size_read = outcome;
+    return YES;
+  }
 }
 
 // Serialize single, parsed document. Does not destroy the document.
@@ -56,13 +91,6 @@ __YAMLSerializationObjectWithYAMLDocument (yaml_document_t *document, YAMLReadOp
         }
     }
 
-    if (opt & kYAMLReadOptionStringScalars) {
-        // Supported
-    } else {
-        YAML_SET_ERROR(kYAMLErrorInvalidOptions, @"Currently only kYAMLReadOptionStringScalars is supported", @"Serialize with kYAMLReadOptionStringScalars option");
-        return nil;
-    }
-
     yaml_node_t *node = NULL;
     yaml_node_item_t *item = NULL;
     yaml_node_pair_t *pair = NULL;
@@ -78,23 +106,27 @@ __YAMLSerializationObjectWithYAMLDocument (yaml_document_t *document, YAMLReadOp
     // Create all objects, don't fill containers yet...
     for (node = document->nodes.start, i = 0; node < document->nodes.top; node++, i++) {
         switch (node->type) {
-            case YAML_SCALAR_NODE:
-                objects[i] = [[stringClass alloc] initWithUTF8String: (const char *)node->data.scalar.value];
+            case YAML_SCALAR_NODE: {
+                id value = [[stringClass alloc] initWithUTF8String: (const char *)node->data.scalar.value];
+                if (!(opt & kYAMLReadOptionStringScalars)) {
+                    value = ParseNull(value) ?: ParseBoolean(value) ?: ParseNumber(value) ?: ParseDate(value) ?: value;
+                }
+                objects[i] = value;
                 if (!root) root = objects[i];
                 break;
-
+            }
             case YAML_SEQUENCE_NODE:
-                objects[i] = [[arrayClass alloc] initWithCapacity: node->data.sequence.items.top - node->data.sequence.items.start];
-                if (!root) root = objects[i];
-                break;
+            objects[i] = [[arrayClass alloc] initWithCapacity: node->data.sequence.items.top - node->data.sequence.items.start];
+            if (!root) root = objects[i];
+            break;
 
             case YAML_MAPPING_NODE:
-                objects[i] = [[dictionaryClass alloc] initWithCapacity: node->data.mapping.pairs.top - node->data.mapping.pairs.start];
-                if (!root) root = objects[i];
-                break;
+            objects[i] = [[dictionaryClass alloc] initWithCapacity: node->data.mapping.pairs.top - node->data.mapping.pairs.start];
+            if (!root) root = objects[i];
+            break;
 
             default:
-                break;
+            break;
         }
     }
 
@@ -110,10 +142,10 @@ __YAMLSerializationObjectWithYAMLDocument (yaml_document_t *document, YAMLReadOp
                 for (pair = node->data.mapping.pairs.start; pair < node->data.mapping.pairs.top; pair++)
                     [objects[i] setObject: objects[pair->value - 1]
                                    forKey: objects[pair->key - 1]];
-                break;
+            break;
 
             default:
-                break;
+            break;
         }
     }
 
@@ -136,8 +168,8 @@ __YAMLSerializationObjectWithYAMLDocument (yaml_document_t *document, YAMLReadOp
 }
 
 + (NSMutableArray *) objectsWithYAMLStream: (NSInputStream *) stream
-                                   options: (YAMLReadOptions) opt
-                                     error: (NSError **) error
+                            options: (YAMLReadOptions) opt
+                              error: (NSError **) error
 {
     NSMutableArray *documents = [NSMutableArray array];
     id documentObject = nil;
@@ -190,8 +222,8 @@ __YAMLSerializationObjectWithYAMLDocument (yaml_document_t *document, YAMLReadOp
 }
 
 + (NSMutableArray *) objectsWithYAMLData: (NSData *) data
-                                 options: (YAMLReadOptions) opt
-                                   error: (NSError **) error;
+                          options: (YAMLReadOptions) opt
+                            error: (NSError **) error;
 {
     NSMutableArray *result = nil;
     if (data != nil) {
@@ -236,7 +268,7 @@ __YAMLSerializationAddObject (yaml_document_t *document, id value) {
             int valueIndex = __YAMLSerializationAddObject(document, [value objectForKey: key]);
             yaml_document_append_mapping_pair(document, result, keyIndex, valueIndex);
         }
-    }
+  }
     else if ([value isKindOfClass: [NSArray class]]) {
         result = yaml_document_add_sequence(document, NULL, YAML_BLOCK_SEQUENCE_STYLE);
         for (id element in value) {
@@ -244,7 +276,7 @@ __YAMLSerializationAddObject (yaml_document_t *document, id value) {
             yaml_document_append_sequence_item(document, result, elementIndex);
         }
     }
-    else {
+  else {
         NSString *string = nil;
         if ([value isKindOfClass: [NSString class]]) {
             string = value;
@@ -252,7 +284,7 @@ __YAMLSerializationAddObject (yaml_document_t *document, id value) {
             string = [value stringValue];
         }
         result = yaml_document_add_scalar(document, NULL, (yaml_char_t *)[string UTF8String], (int) [string length], YAML_PLAIN_SCALAR_STYLE);
-    }
+  }
     return (int) result;
 }
 
@@ -275,8 +307,8 @@ __YAMLSerializationAddObject (yaml_document_t *document, id value) {
 
 + (BOOL) writeObject: (id) object
         toYAMLStream: (NSOutputStream *) stream
-             options: (YAMLWriteOptions) opt
-               error: (NSError **) error
+           options: (YAMLWriteOptions) opt
+             error: (NSError **) error
 {
     BOOL result = YES;
     yaml_emitter_t emitter;
