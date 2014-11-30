@@ -8,39 +8,45 @@ It's fast and compatible with iOS.
 
 ## Example usage
 
-    NSInputStream *stream = [[NSInputStream alloc] initWithFileAtPath: @"yaml/items.yaml"];
-    // or [[NSInputStream alloc] initWithURL: ...]
-    
-    // You can use objectsWithYAMLStream:options:error instead to get all YAML documents.
-    //
-    // Alternativelly object(s)WithYAMLData:options:error or object(s)WithYAMLString:options:error.
-    id yaml = [YAMLSerialization objectWithYAMLStream: stream
-                                              options: kYAMLReadOptionStringScalars
-                                                error: nil];
-    
-    // Dump Objective-C object description.
-    printf("%s", [[yaml description] UTF8String]);
+```objc
+NSInputStream *stream = [[NSInputStream alloc] initWithFileAtPath: @"yaml/items.yaml"];
+// or [[NSInputStream alloc] initWithURL: ...]
+
+// You can use objectsWithYAMLStream:options:error instead to get all YAML documents.
+//
+// Alternativelly object(s)WithYAMLData:options:error or object(s)WithYAMLString:options:error.
+id yaml = [YAMLSerialization objectWithYAMLStream: stream
+                                          options: kYAMLReadOptionStringScalars
+                                            error: nil];
+
+// Dump Objective-C object description.
+printf("%s", [[yaml description] UTF8String]);
+```
 
 For input YAML file:
 
-    items:
-      - name: Foo
-      - name: Bar
+```yaml
+items:
+  - name: Foo
+  - name: Bar
+```
 
 Should print dump string similar to:
-    
-    (
+
+``` 
+(
+  {
+    items = (
       {
-        items = (
-          {
-            name = Foo;
-          },
-          {
-            name = Bar;
-          }
-        );
+        name = Foo;
+      },
+      {
+        name = Bar;
       }
-    )
+    );
+  }
+)
+```
 
 ## API
 
@@ -48,63 +54,67 @@ The following class methods are defined on `YAMLSerialization` class.
 
 ### Reading YAML
 
-    // Returns all document objects from parsed YAML stream.
-    + (NSMutableArray *) objectsWithYAMLStream: (NSInputStream *) stream
-                                       options: (YAMLReadOptions) opt
-                                         error: (NSError **) error;
+```objc
+// Returns all document objects from parsed YAML stream.
++ (NSMutableArray *) objectsWithYAMLStream: (NSInputStream *) stream
+                                   options: (YAMLReadOptions) opt
+                                     error: (NSError **) error;
 
-    // Returns all document objects from parsed YAML data.
-    + (NSMutableArray *) objectsWithYAMLData: (NSData *) data
-                                     options: (YAMLReadOptions) opt
-                                       error: (NSError **) error;
+// Returns all document objects from parsed YAML data.
++ (NSMutableArray *) objectsWithYAMLData: (NSData *) data
+                                 options: (YAMLReadOptions) opt
+                                   error: (NSError **) error;
 
-    // Returns all document objects from parsed YAML string.
-    + (NSMutableArray *) objectsWithYAMLString: (NSString *) string
-                                       options: (YAMLReadOptions) opt
-                                         error: (NSError **) error;
+// Returns all document objects from parsed YAML string.
++ (NSMutableArray *) objectsWithYAMLString: (NSString *) string
+                                   options: (YAMLReadOptions) opt
+                                     error: (NSError **) error;
 
-    // Returns first object from parsed YAML stream.
-    + (id) objectWithYAMLStream: (NSInputStream *) stream
-                        options: (YAMLReadOptions) opt
-                          error: (NSError **) error;
+// Returns first object from parsed YAML stream.
++ (id) objectWithYAMLStream: (NSInputStream *) stream
+                    options: (YAMLReadOptions) opt
+                      error: (NSError **) error;
 
-    // Returns first object from parsed YAML data.
-    + (id) objectWithYAMLData: (NSData *) data
-                      options: (YAMLReadOptions) opt
-                        error: (NSError **) error;
+// Returns first object from parsed YAML data.
++ (id) objectWithYAMLData: (NSData *) data
+                  options: (YAMLReadOptions) opt
+                    error: (NSError **) error;
 
-    // Returns first object from parsed YAML string.
-    + (id) objectWithYAMLString: (NSString *) string
-                        options: (YAMLReadOptions) opt
-                          error: (NSError **) error;
+// Returns first object from parsed YAML string.
++ (id) objectWithYAMLString: (NSString *) string
+                    options: (YAMLReadOptions) opt
+                      error: (NSError **) error;
+```
 
 ### Writing YAML
 
-    // Returns YES on success, NO otherwise.
-    + (BOOL) writeObject: (id) object
-            toYAMLStream: (NSOutputStream *) stream
-                 options: (YAMLWriteOptions) opt
-                   error: (NSError **) error;
+```objc
+// Returns YES on success, NO otherwise.
++ (BOOL) writeObject: (id) object
+        toYAMLStream: (NSOutputStream *) stream
+             options: (YAMLWriteOptions) opt
+               error: (NSError **) error;
 
-    // Caller is responsible for releasing returned object.
-    + (NSData *) createYAMLDataWithObject: (id) object
+// Caller is responsible for releasing returned object.
++ (NSData *) createYAMLDataWithObject: (id) object
+                              options: (YAMLWriteOptions) opt
+                                error: (NSError **) error NS_RETURNS_RETAINED;
+
+// Returns autoreleased object.
++ (NSData *) YAMLDataWithObject: (id) object
+                        options: (YAMLWriteOptions) opt
+                          error: (NSError **) error;
+
+// Caller is responsible for releasing returned object.
++ (NSString *) createYAMLStringWithObject: (id) object
                                   options: (YAMLWriteOptions) opt
                                     error: (NSError **) error NS_RETURNS_RETAINED;
 
-    // Returns autoreleased object.
-    + (NSData *) YAMLDataWithObject: (id) object
+// Returns autoreleased object.
++ (NSString *) YAMLStringWithObject: (id) object
                             options: (YAMLWriteOptions) opt
                               error: (NSError **) error;
-
-    // Caller is responsible for releasing returned object.
-    + (NSString *) createYAMLStringWithObject: (id) object
-                                      options: (YAMLWriteOptions) opt
-                                        error: (NSError **) error NS_RETURNS_RETAINED;
-
-    // Returns autoreleased object.
-    + (NSString *) YAMLStringWithObject: (id) object
-                                options: (YAMLWriteOptions) opt
-                                  error: (NSError **) error;
+```
 
 ## License
 
