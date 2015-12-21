@@ -6,8 +6,8 @@
 //  Copyright 2011 PDAgent, LLC. Released under MIT License.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface YAMLUnitTests : SenTestCase
+@interface YAMLUnitTests : XCTestCase
 
 @end
