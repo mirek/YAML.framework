@@ -8,7 +8,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "yaml.h"
 
 // Mimics NSPropertyListMutabilityOptions
 typedef enum {
