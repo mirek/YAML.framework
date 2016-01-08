@@ -33,7 +33,7 @@
 	NSMutableArray *yaml = [YAMLSerialization YAMLWithData: data options: kYAMLReadOptionStringScalars error: nil];
 	NSLog(@"YAMLWithData took %f", ([[NSDate date] timeIntervalSince1970] - before));
 	NSLog(@"%@", yaml);
-    STAssertEquals((int) 10, (int) [yaml count], @"Wrong number of expected objects");
+    XCTAssertEqual((int) 10, (int) [yaml count], @"Wrong number of expected objects");
 
 }
 
@@ -46,7 +46,7 @@
 	NSMutableArray *yaml2 = [YAMLSerialization YAMLWithStream: stream options: kYAMLReadOptionStringScalars error: &err];
 	NSLog(@"YAMLWithStream took %f", ([[NSDate date] timeIntervalSince1970] - before2));
 	NSLog(@"%@", yaml2);
-    STAssertEquals((int) 10, (int) [yaml2 count], @"Wrong number of expected objects");
+    XCTAssertEqual((int) 10, (int) [yaml2 count], @"Wrong number of expected objects");
     
 }
 
