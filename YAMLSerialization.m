@@ -48,6 +48,10 @@ static NSDate *ParseDate(NSString *str) {
     static NSDateFormatter *dateFormatter = nil;
     dispatch_once(&dateFormatterOnceToken, ^{
         dateFormatter = [[NSDateFormatter alloc] init];
+        // set dateformatter defaults (otherwise it picks up current settings)
+        dateFormatter.calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
+        dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+        dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
         dateFormatter.dateFormat = @"yyyy-MM-dd";
     });
     return [[dateFormatter dateFromString:str] retain];
@@ -110,7 +114,11 @@ __YAMLSerializationObjectWithYAMLDocument (yaml_document_t *document, YAMLReadOp
       case YAML_SCALAR_NODE: {
         id value = [[stringClass alloc] initWithUTF8String: (const char *)node->data.scalar.value];
         if (!(opt & kYAMLReadOptionStringScalars)) {
-          value = ParseNull(value) ?: ParseBoolean(value) ?: ParseNumber(value) ?: ParseDate(value) ?: value;
+          id parsedValue = ParseNull(value) ?: ParseBoolean(value) ?: ParseNumber(value) ?: ParseDate(value) ?: nil;
+          if (parsedValue) {
+            [value release];
+            value = parsedValue;
+          }
         }
         objects[i] = value;
         if (!root) root = objects[i];
