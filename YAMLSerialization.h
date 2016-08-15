@@ -1,10 +1,10 @@
 //
 //  YAMLSerialization.h
 //  YAML Serialization support by Mirek Rusin based on C library LibYAML by Kirill Simonov
-//	Released under MIT License
+//    Released under MIT License
 //
 //  Copyright 2010 Mirek Rusin
-//	Copyright 2010 Stanislav Yudin
+//    Copyright 2010 Stanislav Yudin
 //
 
 #import <Foundation/Foundation.h>
