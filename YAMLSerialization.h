@@ -10,14 +10,14 @@
 #import <Foundation/Foundation.h>
 
 // Mimics NSPropertyListMutabilityOptions
-typedef enum {
-    kYAMLReadOptionImmutable                  = 0x0000000000000001,
-    kYAMLReadOptionMutableContainers          = 0x0000000000000010,
-    kYAMLReadOptionMutableContainersAndLeaves = 0x0000000000000110,
-    kYAMLReadOptionStringScalars              = 0x0000000000001000
-} YAMLReadOptions;
+typedef NS_OPTIONS(NSUInteger, YAMLReadOptions) {
+    kYAMLReadOptionImmutable                  = 1 << 0,
+    kYAMLReadOptionMutableContainers          = 1 << 1,
+    kYAMLReadOptionMutableContainersAndLeaves = 1 << 2,
+    kYAMLReadOptionStringScalars              = 1 << 3
+};
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, YAMLErrorCode) {
     kYAMLErrorNoErrors,
     kYAMLErrorCodeParserInitializationFailed,
     kYAMLErrorCodeParseError,
@@ -25,12 +25,12 @@ typedef enum {
     kYAMLErrorInvalidOptions,
     kYAMLErrorCodeOutOfMemory,
     kYAMLErrorInvalidYamlObject,
-} YAMLErrorCode;
+};
 
-typedef enum {
-    kYAMLWriteOptionSingleDocument    = 0x0000000000000001,
-    kYAMLWriteOptionMultipleDocuments = 0x0000000000000010,
-} YAMLWriteOptions;
+typedef NS_OPTIONS(NSUInteger, YAMLWriteOptions) {
+    kYAMLWriteOptionSingleDocument    = 1 << 0,
+    kYAMLWriteOptionMultipleDocuments = 1 << 1,
+};
 
 extern NSString *const YAMLErrorDomain;
 
