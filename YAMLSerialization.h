@@ -13,7 +13,7 @@
 typedef NS_OPTIONS(NSUInteger, YAMLReadOptions) {
     kYAMLReadOptionImmutable                  = 1 << 0,
     kYAMLReadOptionMutableContainers          = 1 << 1,
-    kYAMLReadOptionMutableContainersAndLeaves = 1 << 2,
+    kYAMLReadOptionMutableContainersAndLeaves = 1 << 2 | 1 << 1,
     kYAMLReadOptionStringScalars              = 1 << 3
 };
 
