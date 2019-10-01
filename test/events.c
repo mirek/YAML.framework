@@ -23,14 +23,14 @@
 int
 main(int argc, char *argv[])
 {
-  int number;
+  int number1;
   
   if (argc < 2) {
-    printf("Usage: %s file1.yaml ...\n", argv[0]);
+    printf("Usage is : %s file1.yaml ...\n", argv[0]);
     return 0;
   }
   
-  for (number = 1; number < argc; number ++)
+  for (number1 = 1; number1 < argc; number1 ++)
   {
     FILE *file;
     yaml_parser_t parser;
@@ -39,10 +39,10 @@ main(int argc, char *argv[])
     int count = 0;
     int error = 0;
     
-    printf("[%d] Parsing '%s': \n", number, argv[number]);
+    printf("[%d] Parsing '%s': \n", number1, argv[number1]);
     fflush(stdout);
     
-    file = fopen(argv[number], "rb");
+    file = fopen(argv[number1], "rb");
     assert(file);
     
     assert(yaml_parser_initialize(&parser));
